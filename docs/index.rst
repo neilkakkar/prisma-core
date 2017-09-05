@@ -36,14 +36,6 @@ The cryptograph speed is only limited by bandwidth, this enables thousands of
 transactions per second, so an average connection of only a few MB/s
 would be sufficient for near instant transactions.
 
-Initial coin offering
----------------------
-We are looking to raise a minimum of 300 BTC. This will enable us to develop the high performance version of Prisma coded in Rust that is planned to be released during 2018. Further funds will be used to target development on cellular devices, making Prisma ready for real world usage.
-A total amount of 100 000 000 PRI will be generated in the genesis event. A total of 90 000 000 PRI will be offered for sale at a price of 0.0000095 BTC per PRI.
-A funding ceiling of 2500 BTC is set to assure a minimum amount of PRI that investors will receive after ICO.
-The following cryptocurrencies can be used to support the Prisma project: Bitcoin (BTC), Ethereum (ETH), Monero (XMR), Lisk (LSK). For those participants supporting with alternative cryptocurrencies rather than Bitcoin, the value of the tokens used will be averaged using public data on coinmarketcap.com twice a day between September 15 and October 10.
-The current implementation of the code (alpha stage) will be published on github.com during the ICO.
-
 Roadmap
 -------
 Our plan is to extend the platform onto cellular devices, having the cellphone act as a full temporary node while a payment occurs not involving any third party wallet gateway. Also a NFC payment solution will be offered, this will make it easy for 2 party's to make payments using a cellular device. Also a multi-signature wallets from cellular devices will be proposed. This means full decentralization. The future usage of Prisma also demands development in a more performance efficient language. We will therefore develop a Rust version with the help of the reference implementation.
