@@ -1,0 +1,11 @@
+# Prisma
+prisma/prisma.ini
+
+# Editors
+.idea/
+
+# Python
+_trial_temp/
+*.egg-info/
+.cache/
+__pycache__/

@@ -1,0 +1,686 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>prisma.network package &mdash; Prisma 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Prisma 0.0.1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Prisma
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">prisma.network package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-prisma.network.protocol">prisma.network.protocol module</a></li>
+<li><a class="reference internal" href="#module-prisma.network.service">prisma.network.service module</a></li>
+<li><a class="reference internal" href="#module-prisma.network.syncevents">prisma.network.syncevents module</a></li>
+<li><a class="reference internal" href="#module-prisma.network.syncpeers">prisma.network.syncpeers module</a></li>
+<li><a class="reference internal" href="#module-prisma.network.syncstate">prisma.network.syncstate module</a></li>
+<li><a class="reference internal" href="#module-prisma.network.validator">prisma.network.validator module</a></li>
+<li><a class="reference internal" href="#module-prisma.network">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Prisma</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>prisma.network package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/prisma.network.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="prisma-network-package">
+<h1>prisma.network package<a class="headerlink" href="#prisma-network-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-prisma.network.protocol">
+<span id="prisma-network-protocol-module"></span><h2>prisma.network.protocol module<a class="headerlink" href="#module-prisma.network.protocol" title="Permalink to this headline">¶</a></h2>
+<p>Copyright 2017 Prisma crypto currency and its Authors.
+This file is part of prisma crypto currency.
+Licensed under the GNU Lesser General Public License, version 3 or later. See LICENSING for details.</p>
+<dl class="class">
+<dt id="prisma.network.protocol.NetworkFactory">
+<em class="property">class </em><code class="descclassname">prisma.network.protocol.</code><code class="descname">NetworkFactory</code><a class="headerlink" href="#prisma.network.protocol.NetworkFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">twisted.internet.protocol.Factory</span></code></p>
+<p>Prisma Factory for PrismaNetworkProtocol</p>
+<dl class="attribute">
+<dt id="prisma.network.protocol.NetworkFactory.protocol">
+<code class="descname">protocol</code><a class="headerlink" href="#prisma.network.protocol.NetworkFactory.protocol" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#prisma.network.protocol.NetworkProtocol" title="prisma.network.protocol.NetworkProtocol"><code class="xref py py-class docutils literal"><span class="pre">NetworkProtocol</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prisma.network.protocol.NetworkProtocol">
+<em class="property">class </em><code class="descclassname">prisma.network.protocol.</code><code class="descname">NetworkProtocol</code><a class="headerlink" href="#prisma.network.protocol.NetworkProtocol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">twisted.protocols.basic.NetstringReceiver</span></code></p>
+<p>This protocol will be used for communicate between peers. The methods are
+described in sync peers and sync events.</p>
+<dl class="method">
+<dt id="prisma.network.protocol.NetworkProtocol.close_connection">
+<code class="descname">close_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.protocol.NetworkProtocol.close_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the connection cleanly.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.protocol.NetworkProtocol.connectionLost">
+<code class="descname">connectionLost</code><span class="sig-paren">(</span><em>reason</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.protocol.NetworkProtocol.connectionLost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print debug when connection lost.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>reason</strong> – </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.protocol.NetworkProtocol.connectionMade">
+<code class="descname">connectionMade</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.protocol.NetworkProtocol.connectionMade" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the peer and the host.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.protocol.NetworkProtocol.is_client">
+<code class="descname">is_client</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.protocol.NetworkProtocol.is_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>If our port is not our listen port then we are the client.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.protocol.NetworkProtocol.is_connected_to_myself">
+<code class="descname">is_connected_to_myself</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.protocol.NetworkProtocol.is_connected_to_myself" title="Permalink to this definition">¶</a></dt>
+<dd><p>This returns true if I’m the client and the remote peer is this running node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.protocol.NetworkProtocol.on_timeout">
+<code class="descname">on_timeout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.protocol.NetworkProtocol.on_timeout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.protocol.NetworkProtocol.send_data">
+<code class="descname">send_data</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.protocol.NetworkProtocol.send_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will transform data object into a json string bytes and sends it to the peer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> – object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.protocol.NetworkProtocol.send_get_events">
+<code class="descname">send_get_events</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.protocol.NetworkProtocol.send_get_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends get events.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.protocol.NetworkProtocol.send_get_peers">
+<code class="descname">send_get_peers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.protocol.NetworkProtocol.send_get_peers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends get peers.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.protocol.NetworkProtocol.send_get_state">
+<code class="descname">send_get_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.protocol.NetworkProtocol.send_get_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends get state.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.protocol.NetworkProtocol.stringReceived">
+<code class="descname">stringReceived</code><span class="sig-paren">(</span><em>payload</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.protocol.NetworkProtocol.stringReceived" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called automatically when receiving a string. Will convert to json object and from then
+check the method that is being called.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>payload</strong> – </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-prisma.network.service">
+<span id="prisma-network-service-module"></span><h2>prisma.network.service module<a class="headerlink" href="#module-prisma.network.service" title="Permalink to this headline">¶</a></h2>
+<p>Copyright 2017 Prisma crypto currency and its Authors.
+This file is part of prisma crypto currency.
+Licensed under the GNU Lesser General Public License, version 3 or later. See LICENSING for details.</p>
+<dl class="class">
+<dt id="prisma.network.service.NetworkService">
+<em class="property">class </em><code class="descclassname">prisma.network.service.</code><code class="descname">NetworkService</code><a class="headerlink" href="#prisma.network.service.NetworkService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Prisma Network.</p>
+<dl class="method">
+<dt id="prisma.network.service.NetworkService.bootstrap">
+<code class="descname">bootstrap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.service.NetworkService.bootstrap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete all peers and bootstrap the peers in the config file by connecting and asking
+them the peers they know.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.service.NetworkService.bootstrap_peer">
+<code class="descname">bootstrap_peer</code><span class="sig-paren">(</span><em>host</em>, <em>port</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.service.NetworkService.bootstrap_peer" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will ask for send_get_peers() and if it’s successful it will add it to the
+available peers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>host</strong> – host to connect to</li>
+<li><strong>port</strong> – port to connect to</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.service.NetworkService.download_state_from_random_peer">
+<code class="descname">download_state_from_random_peer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.service.NetworkService.download_state_from_random_peer" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will get the state of a random peer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.service.NetworkService.get_events_from_random_peer">
+<code class="descname">get_events_from_random_peer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.service.NetworkService.get_events_from_random_peer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a random a peer from the database and connects to it and asks for events.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="prisma.network.service.NetworkService.get_node_id">
+<em class="property">static </em><code class="descname">get_node_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.service.NetworkService.get_node_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a node id based on public key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.service.NetworkService.get_peers_from_random_peer">
+<code class="descname">get_peers_from_random_peer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.service.NetworkService.get_peers_from_random_peer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a random a peer from the database and connects to it and asks for peers.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.service.NetworkService.start">
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.service.NetworkService.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start. Simply listen to the port and connect to a random peer.</p>
+<p>If remote_host and remote_port are specified, connect to that specific node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.service.NetworkService.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.service.NetworkService.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close connections.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-prisma.network.syncevents">
+<span id="prisma-network-syncevents-module"></span><h2>prisma.network.syncevents module<a class="headerlink" href="#module-prisma.network.syncevents" title="Permalink to this headline">¶</a></h2>
+<p>Copyright 2017 Prisma crypto currency and its Authors.
+This file is part of prisma crypto currency.
+Licensed under the GNU Lesser General Public License, version 3 or later. See LICENSING for details.</p>
+<dl class="class">
+<dt id="prisma.network.syncevents.SyncEvents">
+<em class="property">class </em><code class="descclassname">prisma.network.syncevents.</code><code class="descname">SyncEvents</code><a class="headerlink" href="#prisma.network.syncevents.SyncEvents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Methods for syncing events.
+This will use the protocol class to send and receive its data.</p>
+<dl class="staticmethod">
+<dt id="prisma.network.syncevents.SyncEvents.handle_get_events">
+<em class="property">static </em><code class="descname">handle_get_events</code><span class="sig-paren">(</span><em>protocol</em>, <em>latest_event</em>, <em>event_info</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.syncevents.SyncEvents.handle_get_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bob sends to Alice all events that Alice doesn’t have.</p>
+<p>To be fixed. The event list should be sent in chunks, e.g a list of 30 events.
+For now we send each event.</p>
+<p>Here we respond with our local cryptograph and those events that the remote node does not know about.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>protocol</strong> – </li>
+<li><strong>latest_event</strong> – </li>
+<li><strong>event_info</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="prisma.network.syncevents.SyncEvents.handle_get_events_response">
+<em class="property">static </em><code class="descname">handle_get_events_response</code><span class="sig-paren">(</span><em>protocol</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.syncevents.SyncEvents.handle_get_events_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alice adds the events, creates an event, and then divides rounds, decides fame and finds order.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>protocol</strong> (<em>instance of protocol</em>) – </li>
+<li><strong>data</strong> (<em>dict</em>) – sign of remote hash graph</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="prisma.network.syncevents.SyncEvents.send_get_events">
+<em class="property">static </em><code class="descname">send_get_events</code><span class="sig-paren">(</span><em>protocol</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.syncevents.SyncEvents.send_get_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alice tells Bob his event info.</p>
+<p>sendGetEvents is used to sync events with a remote peer
+running once on start. If syncing occurs in this stage, no
+remote node shall be able to sync from us.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>protocol</strong> – </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-prisma.network.syncpeers">
+<span id="prisma-network-syncpeers-module"></span><h2>prisma.network.syncpeers module<a class="headerlink" href="#module-prisma.network.syncpeers" title="Permalink to this headline">¶</a></h2>
+<p>Copyright 2017 Prisma crypto currency and its Authors.
+This file is part of prisma crypto currency.
+Licensed under the GNU Lesser General Public License, version 3 or later. See LICENSING for details.</p>
+<dl class="class">
+<dt id="prisma.network.syncpeers.SyncPeers">
+<em class="property">class </em><code class="descclassname">prisma.network.syncpeers.</code><code class="descname">SyncPeers</code><a class="headerlink" href="#prisma.network.syncpeers.SyncPeers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Methods for syncing peers.
+This will use the protocol class to send and receive its data.</p>
+<dl class="staticmethod">
+<dt id="prisma.network.syncpeers.SyncPeers.handle_get_peers">
+<em class="property">static </em><code class="descname">handle_get_peers</code><span class="sig-paren">(</span><em>protocol</em>, <em>_id</em>, <em>port</em>, <em>latest_event</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.syncpeers.SyncPeers.handle_get_peers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add remote peer to database and send my peers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>protocol</strong> – </li>
+<li><strong>_id</strong> – </li>
+<li><strong>port</strong> – </li>
+<li><strong>latest_event</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="prisma.network.syncpeers.SyncPeers.handle_get_peers_response">
+<em class="property">static </em><code class="descname">handle_get_peers_response</code><span class="sig-paren">(</span><em>protocol</em>, <em>peers</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.syncpeers.SyncPeers.handle_get_peers_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add peers from the response to the database. Then close connection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>protocol</strong> – </li>
+<li><strong>peers</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="prisma.network.syncpeers.SyncPeers.send_get_peers">
+<em class="property">static </em><code class="descname">send_get_peers</code><span class="sig-paren">(</span><em>protocol</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.syncpeers.SyncPeers.send_get_peers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare and send get_peers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>protocol</strong> – </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-prisma.network.syncstate">
+<span id="prisma-network-syncstate-module"></span><h2>prisma.network.syncstate module<a class="headerlink" href="#module-prisma.network.syncstate" title="Permalink to this headline">¶</a></h2>
+<p>Copyright 2017 Prisma crypto currency and its Authors.
+This file is part of prisma crypto currency.
+Licensed under the GNU Lesser General Public License, version 3 or later. See LICENSING for details.</p>
+<dl class="class">
+<dt id="prisma.network.syncstate.SyncState">
+<em class="property">class </em><code class="descclassname">prisma.network.syncstate.</code><code class="descname">SyncState</code><a class="headerlink" href="#prisma.network.syncstate.SyncState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Methods for syncing the state.
+This will use the protocol class to send and receive its data.</p>
+<dl class="staticmethod">
+<dt id="prisma.network.syncstate.SyncState.handle_get_state">
+<em class="property">static </em><code class="descname">handle_get_state</code><span class="sig-paren">(</span><em>protocol</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.syncstate.SyncState.handle_get_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send our state</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="prisma.network.syncstate.SyncState.handle_get_state_response">
+<em class="property">static </em><code class="descname">handle_get_state_response</code><span class="sig-paren">(</span><em>protocol</em>, <em>state</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.syncstate.SyncState.handle_get_state_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add state from the response to the database. Then close connection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>protocol</strong> – </li>
+<li><strong>state</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="prisma.network.syncstate.SyncState.send_get_state">
+<em class="property">static </em><code class="descname">send_get_state</code><span class="sig-paren">(</span><em>protocol</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.syncstate.SyncState.send_get_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare and send get_state.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>protocol</strong> – </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-prisma.network.validator">
+<span id="prisma-network-validator-module"></span><h2>prisma.network.validator module<a class="headerlink" href="#module-prisma.network.validator" title="Permalink to this headline">¶</a></h2>
+<p>Copyright 2017 Prisma crypto currency and its Authors.
+This file is part of prisma crypto currency.
+Licensed under the GNU Lesser General Public License, version 3 or later. See LICENSING for details.</p>
+<dl class="class">
+<dt id="prisma.network.validator.Validator">
+<em class="property">class </em><code class="descclassname">prisma.network.validator.</code><code class="descname">Validator</code><a class="headerlink" href="#prisma.network.validator.Validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="staticmethod">
+<dt id="prisma.network.validator.Validator.is_valid_node_ip">
+<em class="property">static </em><code class="descname">is_valid_node_ip</code><span class="sig-paren">(</span><em>ip</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.validator.Validator.is_valid_node_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate node ip address.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ip</strong> (<em>string</em>) – An IPv4 address.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">False: Is either a non valid IPv4 address or is an RFC1918-address.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string (IP address)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="prisma.network.validator.Validator.valid_peers_methods">
+<em class="property">static </em><code class="descname">valid_peers_methods</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.validator.Validator.valid_peers_methods" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.network.validator.Validator.validate_method">
+<code class="descname">validate_method</code><span class="sig-paren">(</span><em>data_payload</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.network.validator.Validator.validate_method" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-prisma.network">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-prisma.network" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, The Prisma Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
