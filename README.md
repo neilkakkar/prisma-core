@@ -50,6 +50,6 @@ For more info: https://twistedmatrix.com/documents/current/core/howto/trial.html
 # Howto generate the documentation
 
 ```
-sphinx-apidoc -f -o docs/sphinx/source/ prisma/
-sphinx-build -E -b html docs/sphinx/source docs/sphinx/build
+sphinx-apidoc -f -o docs/source/ prisma/
+sphinx-build -E -b html docs/source docs/
 ```
