@@ -49,7 +49,9 @@ For more info: https://twistedmatrix.com/documents/current/core/howto/trial.html
 
 # Howto generate the documentation
 
+You will need a separate directory with the checkout of the branch `gh-pages` called `prisma-gh-pages`.
+
 ```
-sphinx-apidoc -f -o docs/source/ prisma/
-sphinx-build -E -b html docs/source docs/
+sphinx-apidoc -f -o docs/ prisma/
+sphinx-build -E -b html ../prisma-gh-pages/ docs/
 ```
