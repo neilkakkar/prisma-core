@@ -1,0 +1,724 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>prisma.crypto package &mdash; Prisma 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Prisma 0.0.1 documentation" href="index.html"/>
+        <link rel="up" title="prisma package" href="prisma.html"/>
+        <link rel="next" title="prisma.cryptograph package" href="prisma.cryptograph.html"/>
+        <link rel="prev" title="prisma.client package" href="prisma.client.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Prisma
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">prisma</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="prisma.html">prisma package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="prisma.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="prisma.api.html">prisma.api package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="prisma.client.html">prisma.client package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">prisma.crypto package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="prisma.cryptograph.html">prisma.cryptograph package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="prisma.db.html">prisma.db package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="prisma.network.html">prisma.network package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="prisma.test.html">prisma.test package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="prisma.utils.html">prisma.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="prisma.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prisma.html#module-prisma.config">prisma.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prisma.html#module-prisma.manager">prisma.manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prisma.html#module-prisma.prismad">prisma.prismad module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prisma.html#module-prisma">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Prisma</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">prisma</a> &raquo;</li>
+        
+          <li><a href="prisma.html">prisma package</a> &raquo;</li>
+        
+      <li>prisma.crypto package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/prisma.crypto.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="prisma-crypto-package">
+<h1>prisma.crypto package<a class="headerlink" href="#prisma-crypto-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-prisma.crypto.crypto">
+<span id="prisma-crypto-crypto-module"></span><h2>prisma.crypto.crypto module<a class="headerlink" href="#module-prisma.crypto.crypto" title="Permalink to this headline">¶</a></h2>
+<p>Copyright 2017 Prisma crypto currency and its Authors.
+This file is part of prisma crypto currency.
+Licensed under the GNU Lesser General Public License, version 3 or later. See LICENSING for details.</p>
+<dl class="class">
+<dt id="prisma.crypto.crypto.Crypto">
+<em class="property">class </em><code class="descclassname">prisma.crypto.crypto.</code><code class="descname">Crypto</code><a class="headerlink" href="#prisma.crypto.crypto.Crypto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="prisma.crypto.crypto.Crypto.blake_hash">
+<code class="descname">blake_hash</code><span class="sig-paren">(</span><em>byte_string</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.crypto.Crypto.blake_hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a blake2b hash of a byte string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>byte_string</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">byte string of the generated blake2b hash or false</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.crypto.Crypto.generate_keypair">
+<code class="descname">generate_keypair</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.crypto.Crypto.generate_keypair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a random public and private key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Instance of Signing Key: Contains the public and private key.
+This instance can be called from external functions.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.crypto.Crypto.generate_random_string">
+<code class="descname">generate_random_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.crypto.Crypto.generate_random_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a random hex string with the size of 32 bytes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Success: hex decimal string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">False: could not generate the random string.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.crypto.Crypto.get_verify_key">
+<code class="descname">get_verify_key</code><span class="sig-paren">(</span><em>private_key</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.crypto.Crypto.get_verify_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.crypto.Crypto.sha256">
+<code class="descname">sha256</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.crypto.Crypto.sha256" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a sha256 hash sum of a string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>string</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Success: byte string of the generated sha256 hash.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">False: could not generate the blake2 hash of the byte string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.crypto.Crypto.sha256_tx">
+<code class="descname">sha256_tx</code><span class="sig-paren">(</span><em>tx_hex</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.crypto.Crypto.sha256_tx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a sha256 hash sum of a byte string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tx_hex</strong> – hex decimal string of the json serialized transaction.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">byte string of the generated sha256 hash, false: could not generate the blake2 hash of the byte string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.crypto.Crypto.sign_event">
+<code class="descname">sign_event</code><span class="sig-paren">(</span><em>event</em>, <em>private_key_seed</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.crypto.Crypto.sign_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signs event(s) in the hash graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>event</strong> – a json serialized tuple of dicts.</li>
+<li><strong>private_key_seed</strong> – Decrypted private key as byte string.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">sig_detached: hex formatted byte string of the signature without the signed message</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">verify_key: hex formatted byte string of the verify key.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">string (hex formatted) or bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.crypto.Crypto.sign_tx">
+<code class="descname">sign_tx</code><span class="sig-paren">(</span><em>private_key_seed</em>, <em>tx_hash</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.crypto.Crypto.sign_tx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signs a sha256 hash sum of the json serialized transaction dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>private_key_seed</strong> – byte string of a hex decimal private key.</li>
+<li><strong>tx_hash</strong> – sha256 hash of the json serialized transaction dictionary.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">False: could not sign the transaction.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Success: a dict with a hex encoded detached signature and verify key.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict or bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.crypto.Crypto.validate_sign_consensus">
+<code class="descname">validate_sign_consensus</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.crypto.Crypto.validate_sign_consensus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validates consenss signature</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>dict</em>) – consensus signature</li>
+<li><strong>to_sign_count</strong> (<em>int</em>) – predefined size of sign paceges</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">decrypted data and signature itself or False if error</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict or bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.crypto.Crypto.verify_event">
+<code class="descname">verify_event</code><span class="sig-paren">(</span><em>ev</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.crypto.Crypto.verify_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies a serialized event from a remote host.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ev</strong> – dictionary containing the keys,
+signed_event: hex formatted byte string of the signature without the signed message.
+event: the serialized event.
+verify_key_hex: hex formatted byte string of the public key</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True: Successfully verified Event.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">False: Unsuccessfully verified Event.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.crypto.Crypto.verify_local_event">
+<code class="descname">verify_local_event</code><span class="sig-paren">(</span><em>ev</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.crypto.Crypto.verify_local_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies a signed Event.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ev</strong> – <p>A named event tuple with the type, Event_(‘d p t c s’) where;</p>
+<ul class="simple">
+<li>d: Data/payload!</li>
+<li>p: event-hash of 2 parents (latest events) of event</li>
+<li>t: time of event creation</li>
+<li>c: identifying key of first parent</li>
+<li>s: digital sign of event by first parent (using his secret key)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True: Successfully verified event.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">False: Unsuccessfully verified event.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.crypto.Crypto.verify_tx">
+<code class="descname">verify_tx</code><span class="sig-paren">(</span><em>transaction</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.crypto.Crypto.verify_tx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify a transaction within an event.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>transaction</strong> (<em>dict</em>) – tx_hash: json serialized transaction dictionary.
+tx_signature: hex string of the detached signature of a signed transaction.
+tx_public_key: the public key of the one who signed the transaction.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">False: could not sign the transaction.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True: validated successfully.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-prisma.crypto.wallet">
+<span id="prisma-crypto-wallet-module"></span><h2>prisma.crypto.wallet module<a class="headerlink" href="#module-prisma.crypto.wallet" title="Permalink to this headline">¶</a></h2>
+<p>Copyright 2017 Prisma crypto currency and its Authors.
+This file is part of prisma crypto currency.
+Licensed under the GNU Lesser General Public License, version 3 or later. See LICENSING for details.</p>
+<dl class="class">
+<dt id="prisma.crypto.wallet.Wallet">
+<em class="property">class </em><code class="descclassname">prisma.crypto.wallet.</code><code class="descname">Wallet</code><a class="headerlink" href="#prisma.crypto.wallet.Wallet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="prisma.crypto.wallet.Wallet.addr_from_public_key">
+<code class="descname">addr_from_public_key</code><span class="sig-paren">(</span><em>public_key</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.wallet.Wallet.addr_from_public_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the public key to a more readable wallet address.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>public_key</strong> (<em>byte string</em>) – byte string with the public key</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Success: an int representation of the byte string plus suffix</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">False: could not convert the public key to an int representation</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.wallet.Wallet.create_prisma_home_directory">
+<code class="descname">create_prisma_home_directory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.wallet.Wallet.create_prisma_home_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates or make sure that prisma root directory exists.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True: Prisma root directory exists.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">False: Could not create prisma root directory.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.wallet.Wallet.decrypt_keystore">
+<code class="descname">decrypt_keystore</code><span class="sig-paren">(</span><em>address</em>, <em>password</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.wallet.Wallet.decrypt_keystore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypts the wallet private key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>password</strong> – password string for decryption of the private key.</li>
+<li><strong>address</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Success: dictionary of the unencrypted private key, unencrypted public key and address.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">False: could not decrypt private key.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict or bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.wallet.Wallet.encrypt_keystore">
+<code class="descname">encrypt_keystore</code><span class="sig-paren">(</span><em>account</em>, <em>password</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.wallet.Wallet.encrypt_keystore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts the wallet private key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>account</strong> – dictionary of unencrypted public and private keys.</li>
+<li><strong>password</strong> – password string for encryption.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Success: dictionary of the encrypted private key, unencrypted public key and address</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">False: could not encrypt private key.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict or bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.wallet.Wallet.keystore_path">
+<code class="descname">keystore_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.wallet.Wallet.keystore_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates or make sure that prisma wallet key storage file exists.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True - Prisma wallet key storage file exists.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">False - could not create prisma wallet key storage file.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.wallet.Wallet.list_wallets">
+<code class="descname">list_wallets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.wallet.Wallet.list_wallets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lists existing wallet addresses. One address will be sent as an argument to decrypt_keystore().</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.wallet.Wallet.new_wallet">
+<code class="descname">new_wallet</code><span class="sig-paren">(</span><em>password</em>, <em>write=True</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.wallet.Wallet.new_wallet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new random public and private key. Encrypts the private key and writes it to wallet key storage.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>password</strong> – password string for encrypt and decrypt the private key.</li>
+<li><strong>write</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True: successfully created a new wallet.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">False: could not create a new wallet.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.wallet.Wallet.prompt_unlock">
+<code class="descname">prompt_unlock</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.wallet.Wallet.prompt_unlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prompt user for unlocking a certain wallet by its address.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">success: keys dictionary, no success: False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.wallet.Wallet.read_keystore">
+<code class="descname">read_keystore</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.wallet.Wallet.read_keystore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the json key storage file.</p>
+<p>:param none
+:return: Success: dictionary of the encrypted private key, unencrypted public key and address.
+:return: False: could not decrypt private key.
+:rtype: dict or bool</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.crypto.wallet.Wallet.write_keystore">
+<code class="descname">write_keystore</code><span class="sig-paren">(</span><em>encrypted_json_array</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.crypto.wallet.Wallet.write_keystore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the json key storage file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>encrypted_json_array</strong> – dictionary with the encrypted private key, unencrypted public key and address</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True: successfully wrote dictionary to key storage.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">False: could not write dictionary to key storage.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-prisma.crypto">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-prisma.crypto" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="prisma.cryptograph.html" class="btn btn-neutral float-right" title="prisma.cryptograph package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="prisma.client.html" class="btn btn-neutral" title="prisma.client package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, The Prisma Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

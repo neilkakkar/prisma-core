@@ -1,0 +1,1567 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>prisma.db package &mdash; Prisma 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Prisma 0.0.1 documentation" href="index.html"/>
+        <link rel="up" title="prisma package" href="prisma.html"/>
+        <link rel="next" title="prisma.network package" href="prisma.network.html"/>
+        <link rel="prev" title="prisma.cryptograph package" href="prisma.cryptograph.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Prisma
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">prisma</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="prisma.html">prisma package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="prisma.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="prisma.api.html">prisma.api package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="prisma.client.html">prisma.client package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="prisma.crypto.html">prisma.crypto package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="prisma.cryptograph.html">prisma.cryptograph package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">prisma.db package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="prisma.network.html">prisma.network package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="prisma.test.html">prisma.test package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="prisma.utils.html">prisma.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="prisma.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prisma.html#module-prisma.config">prisma.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prisma.html#module-prisma.manager">prisma.manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prisma.html#module-prisma.prismad">prisma.prismad module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prisma.html#module-prisma">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Prisma</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">prisma</a> &raquo;</li>
+        
+          <li><a href="prisma.html">prisma package</a> &raquo;</li>
+        
+      <li>prisma.db package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/prisma.db.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="prisma-db-package">
+<h1>prisma.db package<a class="headerlink" href="#prisma-db-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-prisma.db.database">
+<span id="prisma-db-database-module"></span><h2>prisma.db.database module<a class="headerlink" href="#module-prisma.db.database" title="Permalink to this headline">¶</a></h2>
+<p>Copyright 2017 Prisma crypto currency and its Authors.
+This file is part of prisma crypto currency.
+Licensed under the GNU Lesser General Public License, version 3 or later. See LICENSING for details.</p>
+<dl class="class">
+<dt id="prisma.db.database.PrismaDB">
+<em class="property">class </em><code class="descclassname">prisma.db.database.</code><code class="descname">PrismaDB</code><span class="sig-paren">(</span><em>db_name</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Database class.</p>
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.check_famous">
+<code class="descname">check_famous</code><span class="sig-paren">(</span><em>h</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.check_famous" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if hash present in famous</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>h</strong> (<em>str</em>) – event hash</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">present or not</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.check_if_signature_present">
+<code class="descname">check_if_signature_present</code><span class="sig-paren">(</span><em>last_round</em>, <em>ver_key</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.check_if_signature_present" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if signature with that verify_key key present in db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>last_round</strong> (<em>int</em>) – last round of state</li>
+<li><strong>ver_key</strong> (<em>str</em>) – verify_key of sign</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">False if it was found, True if was Not find or error</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.count_peers">
+<code class="descname">count_peers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.count_peers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count number of peers before start syncing events.
+Consensus states that at least 3 node should be online.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">peer count</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.create_collections">
+<code class="descname">create_collections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.create_collections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates all collections</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">was the creation successful</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.create_indexes">
+<code class="descname">create_indexes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.create_indexes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates index based on event time.
+This will be useful for remote graphs wanting to sync
+events between particular time stamps.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.delete_can_see">
+<code class="descname">delete_can_see</code><span class="sig-paren">(</span><em>h</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.delete_can_see" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes document that can be seen by event hash</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>h</strong> (<em>str</em>) – event hash</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the delete operation successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.delete_event">
+<code class="descname">delete_event</code><span class="sig-paren">(</span><em>h</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.delete_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes one event</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>h</strong> (<em>str</em>) – event hash</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the deletion successful</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.delete_famous">
+<code class="descname">delete_famous</code><span class="sig-paren">(</span><em>h</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.delete_famous" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes famous info with given hash from db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>h</strong> (<em>str</em>) – event hash</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the delete operation successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.delete_height">
+<code class="descname">delete_height</code><span class="sig-paren">(</span><em>h</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.delete_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes height by event hash</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>h</strong> (<em>str</em>) – event hash</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the delete operation successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.delete_money_transfer_transaction_less_than">
+<code class="descname">delete_money_transfer_transaction_less_than</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.delete_money_transfer_transaction_less_than" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>r</strong> – round</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.delete_peer">
+<code class="descname">delete_peer</code><span class="sig-paren">(</span><em>ip</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.delete_peer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.delete_peers">
+<code class="descname">delete_peers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.delete_peers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes all peers stored in db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">was the delete operation successful</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.delete_references_can_see">
+<code class="descname">delete_references_can_see</code><span class="sig-paren">(</span><em>hash_list</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.delete_references_can_see" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes all references to signed hashes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hash_list</strong> (<em>tuple</em>) – list of signed events</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the delete operation successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.delete_round_less_than">
+<code class="descname">delete_round_less_than</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.delete_round_less_than" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes all documents with round less than value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) – start round num</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the delete operation successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.delete_state_less_than">
+<code class="descname">delete_state_less_than</code><span class="sig-paren">(</span><em>round</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.delete_state_less_than" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.delete_transaction_by_ev_hash">
+<code class="descname">delete_transaction_by_ev_hash</code><span class="sig-paren">(</span><em>hash</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.delete_transaction_by_ev_hash" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.delete_transaction_less_than">
+<code class="descname">delete_transaction_less_than</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.delete_transaction_less_than" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes transaction with round less than given value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>r</strong> (<em>int</em>) – start round num</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the delete operation successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.delete_votes">
+<code class="descname">delete_votes</code><span class="sig-paren">(</span><em>h</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.delete_votes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes votes from db by given hash</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>h</strong> (<em>str</em>) – event hash to be found</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the delete operation successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.delete_witnesses_less_than">
+<code class="descname">delete_witnesses_less_than</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.delete_witnesses_less_than" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes witnesses with round less than given</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>r</strong> (<em>int</em>) – start round num</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the delete operation successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.destroy_db">
+<code class="descname">destroy_db</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.destroy_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroys database</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em><em> or </em><em>None</em>) – database name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the destruction successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.disconnect">
+<code class="descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_account_balance">
+<code class="descname">get_account_balance</code><span class="sig-paren">(</span><em>account_id</em>, <em>r=False</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_account_balance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get account balance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>account_id</strong> – </li>
+<li><strong>r</strong> – range</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_account_balance_many">
+<code class="descname">get_account_balance_many</code><span class="sig-paren">(</span><em>range=False</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_account_balance_many" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_all_known_wallets">
+<code class="descname">get_all_known_wallets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_all_known_wallets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_can_see">
+<code class="descname">get_can_see</code><span class="sig-paren">(</span><em>event_id</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_can_see" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets events that can be seen based on event hash
+Note: parent is actually parent hash</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event_id</strong> (<em>str</em>) – event hash</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>events that event with given hash can see</li>
+<li>False - if error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_consensus_count">
+<code class="descname">get_consensus_count</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_consensus_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets how many consensus stored in db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">consensus count or 0 if the collection is empty</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_consensus_greater_than">
+<code class="descname">get_consensus_greater_than</code><span class="sig-paren">(</span><em>value</em>, <em>lim=0</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_consensus_greater_than" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all consensus with value greater than the given one</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>value</strong> (<em>int</em>) – value to start</li>
+<li><strong>lim</strong> (<em>int</em>) – limit of documents to be found</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">consensus list</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_consensus_last_created_sign">
+<code class="descname">get_consensus_last_created_sign</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_consensus_last_created_sign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets consensus with last created signature flag</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>Last created signature - if it was found</li>
+<li>-1 - if it does not exist</li>
+<li>False - if error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_consensus_last_sent">
+<code class="descname">get_consensus_last_sent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_consensus_last_sent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets consensus with last sent flag</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>Last sent consensus - if found</li>
+<li>-1 - if it does not exist</li>
+<li>False - if error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_consensus_last_signed">
+<code class="descname">get_consensus_last_signed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_consensus_last_signed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_consensus_many">
+<code class="descname">get_consensus_many</code><span class="sig-paren">(</span><em>lim=0</em>, <em>sign=False</em>, <em>sort=False</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_consensus_many" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets many consensus info from db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lim</strong> (<em>int</em><em> (</em><em>Note: 0 - means there is no limit</em><em>)</em>) – limit of documents to find</li>
+<li><strong>sign</strong> (<em>bool</em>) – gets signed or unsigned</li>
+<li><strong>sort</strong> (<em>bool</em><em> or </em><em>int</em>) – how data should be sorted:
+* False - by id
+* 1 - Ascending
+* -1 - Descending</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">consensus list</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_db">
+<code class="descname">get_db</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_db" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_db_name">
+<code class="descname">get_db_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_db_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_event">
+<code class="descname">get_event</code><span class="sig-paren">(</span><em>event_id</em>, <em>as_tuple=True</em>, <em>clear_parent=False</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets one event from db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>event_id</strong> (<em>str</em>) – event id (hash)</li>
+<li><strong>as_tuple</strong> (<em>bool</em>) – returns result as named tuple or as dict</li>
+<li><strong>clear_parent</strong> (<em>bool</em>) – removes parents if they are signed or doesn’t remove them</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Event or False if error</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li>dict of events</li>
+<li>dict of named tuple</li>
+<li>bool</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_events_by_time">
+<code class="descname">get_events_by_time</code><span class="sig-paren">(</span><em>time</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_events_by_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_events_many">
+<code class="descname">get_events_many</code><span class="sig-paren">(</span><em>as_tuple=True</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_events_many" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets many events from db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>as_tuple</strong> (<em>bool</em>) – returns result as named tuple or as dict</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Events</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><ul class="simple">
+<li>dict of events</li>
+<li>dict of named tuple</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_famous">
+<code class="descname">get_famous</code><span class="sig-paren">(</span><em>witness</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_famous" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets whether the witness is famous or not from db</p>
+<p>Return None here? We can check the return value of None (if not None:).
+The return value will be either False or True when it comes to a famous witness,
+so we can not do a simple if statement to check the return value from this function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>witness</strong> (<em>str</em>) – event hash</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>True/False - if it was found in db</li>
+<li>None  - if the hash does not exist</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_famous_many">
+<code class="descname">get_famous_many</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_famous_many" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all famous witnesses from db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>famous info in format {hash: is famous(T/F)}</li>
+<li>False - if error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_head">
+<code class="descname">get_head</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_head" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets cryptograph head from db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>hash of head event</li>
+<li>False if error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_height">
+<code class="descname">get_height</code><span class="sig-paren">(</span><em>event_id</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets height of given event (hash) from db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event_id</strong> (<em>str</em>) – event hash</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>height</li>
+<li>False if error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_heights_many">
+<code class="descname">get_heights_many</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_heights_many" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all heights info</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">height in format {hash: height}</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_latest_event_time">
+<code class="descname">get_latest_event_time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_latest_event_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets latest (largest) time of event stored in db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>latest event time - if it is possible to find event</li>
+<li>0.0 - if the collection is empty</li>
+<li>False - if error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_peer">
+<code class="descname">get_peer</code><span class="sig-paren">(</span><em>ip</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_peer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_peers_many">
+<code class="descname">get_peers_many</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_peers_many" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all peers stored in db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">peer list or False if error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_random_peer">
+<code class="descname">get_random_peer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_random_peer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_round">
+<code class="descname">get_round</code><span class="sig-paren">(</span><em>h</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_round" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets one round from db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>h</strong> (<em>str</em>) – event hash(key)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>round -  if the document was found in collection</li>
+<li>0     - if the document was not found in collection</li>
+<li>False   - in the case of error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_rounds_hash_list">
+<code class="descname">get_rounds_hash_list</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_rounds_hash_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets hashes of all events with given round</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>r</strong> (<em>int</em>) – round num</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of all events hashes with given round</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_rounds_less_than">
+<code class="descname">get_rounds_less_than</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_rounds_less_than" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets documents with round less than given value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) – start round num</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">id (hash) values from all documents with round less than given value</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_rounds_many">
+<code class="descname">get_rounds_many</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_rounds_many" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all rounds from db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">round for every hash or False if error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_rounds_max">
+<code class="descname">get_rounds_max</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_rounds_max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets max round stored in db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>round - if the document was found in collection</li>
+<li>0 - if the collection is empty</li>
+<li>False -  in the case of error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_signature">
+<code class="descname">get_signature</code><span class="sig-paren">(</span><em>last_round</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_signature" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_signature_grater_than">
+<code class="descname">get_signature_grater_than</code><span class="sig-paren">(</span><em>last_round</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_signature_grater_than" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets signatures with start greater than the given one</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>last_round</strong> (<em>int</em>) – last round of state</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">signatures or False if error</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_state">
+<code class="descname">get_state</code><span class="sig-paren">(</span><em>round</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_state_balance">
+<code class="descname">get_state_balance</code><span class="sig-paren">(</span><em>address</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_state_balance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_state_many">
+<code class="descname">get_state_many</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_state_many" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_transactions_many">
+<code class="descname">get_transactions_many</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_transactions_many" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all transactions from db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of all transactions stored in db (without round)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_unsend_transactions_many">
+<code class="descname">get_unsend_transactions_many</code><span class="sig-paren">(</span><em>account_id</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_unsend_transactions_many" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all transactions unsend from db.
+Unsend mean that event for that tx was not created</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>account_id</strong> (<em>str</em>) – our local acoount id</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of all unsent transactions stored in db, and list of their ids</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_version">
+<code class="descname">get_version</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_vote">
+<code class="descname">get_vote</code><span class="sig-paren">(</span><em>vote_id</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_vote" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets vote from db by event id</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vote_id</strong> (<em>str</em>) – hash events the votes of which we are looking for</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>votes dict in format {hash: vote(T/F)}</li>
+<li>False - if error</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_wallets_state">
+<code class="descname">get_wallets_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_wallets_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_witness">
+<code class="descname">get_witness</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_witness" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets witnesses for given round</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>r</strong> (<em>int</em>) – round num to find</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>all witnesses with given round</li>
+<li>false - if error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.get_witness_max_round">
+<code class="descname">get_witness_max_round</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.get_witness_max_round" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get max round stored in witness</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>max round - if it was found</li>
+<li>0 - if the collection is empty</li>
+<li>False - if error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int or bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.insert_can_see">
+<code class="descname">insert_can_see</code><span class="sig-paren">(</span><em>can_see</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.insert_can_see" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts can see info
+Note: parent is actually parent hash</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>can_see</strong> (<em>dict</em>) – event hash and hash of event that can see him
+format {event:{parent:event}}</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the insertion successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.insert_consensus">
+<code class="descname">insert_consensus</code><span class="sig-paren">(</span><em>consensus</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.insert_consensus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts consensus into db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>consensus</strong> (<em>int</em>) – consensus (Note: by default consensus is unsigned)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the insertion successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.insert_event">
+<code class="descname">insert_event</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.insert_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts one event into db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> (<em>dict</em>) – event info including blake2 hash as key</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the insertion successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.insert_famous">
+<code class="descname">insert_famous</code><span class="sig-paren">(</span><em>famous_info</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.insert_famous" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts famous info to db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>famous_info</strong> (<em>dict</em>) – data in format {hash: is famous(T/F)}</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the insertion successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.insert_head">
+<code class="descname">insert_head</code><span class="sig-paren">(</span><em>head</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.insert_head" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts cryptograph head to db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>head</strong> (<em>str</em>) – hash of head event</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the insertion successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.insert_height">
+<code class="descname">insert_height</code><span class="sig-paren">(</span><em>height_info</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.insert_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts height of event to db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>height_info</strong> (<em>dict</em>) – data in format {hash: height}</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the insertion successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.insert_peer">
+<code class="descname">insert_peer</code><span class="sig-paren">(</span><em>peer</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.insert_peer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts peer into db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>peer</strong> (<em>dict</em>) – peer info</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the insertion successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.insert_round">
+<code class="descname">insert_round</code><span class="sig-paren">(</span><em>round_info</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.insert_round" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts one round to db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>round_info</strong> (<em>dict</em>) – dict in format {hash:round}</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the insertion successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.insert_signature">
+<code class="descname">insert_signature</code><span class="sig-paren">(</span><em>signature</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.insert_signature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts signature into db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>signature</strong> (<em>dict</em>) – sign - contain: signature itself, start value and consensus hash</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the insertion successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.insert_signature_unchecked">
+<code class="descname">insert_signature_unchecked</code><span class="sig-paren">(</span><em>signature</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.insert_signature_unchecked" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts signature as unchecked
+(unchecked means that we have not compared this remote hash with our local)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>signature</strong> (<em>dict</em>) – sign - contain: sign itself, start value and consensus hash</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the insertion successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.insert_state">
+<code class="descname">insert_state</code><span class="sig-paren">(</span><em>balance</em>, <em>round</em>, <em>hash</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.insert_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.insert_transactions">
+<code class="descname">insert_transactions</code><span class="sig-paren">(</span><em>tx_list</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.insert_transactions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.insert_vote">
+<code class="descname">insert_vote</code><span class="sig-paren">(</span><em>vote</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.insert_vote" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts vote to db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vote</strong> (<em>dict</em>) – vote info in format {who vote(hash):{for whom(hash): vote(T/F)}}</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the insertion successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.insert_witness">
+<code class="descname">insert_witness</code><span class="sig-paren">(</span><em>witness_info</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.insert_witness" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts one witness to db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>witness_info</strong> (<em>dict</em>) – witness data in format {round:{hash:hash}}</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the insertion successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.is_running">
+<code class="descname">is_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.is_running" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.set_consensus_last_created_sign">
+<code class="descname">set_consensus_last_created_sign</code><span class="sig-paren">(</span><em>consensus</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.set_consensus_last_created_sign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the last created signature flag to consensus</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>consensus</strong> (<em>int</em>) – consensus value</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the setting operation successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.set_consensus_last_sent">
+<code class="descname">set_consensus_last_sent</code><span class="sig-paren">(</span><em>consensus</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.set_consensus_last_sent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the last sent flag to consensus</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>consensus</strong> (<em>int</em>) – consensus value</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the setting operation successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.set_state_signed">
+<code class="descname">set_state_signed</code><span class="sig-paren">(</span><em>round</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.set_state_signed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.set_transaction_hash">
+<code class="descname">set_transaction_hash</code><span class="sig-paren">(</span><em>tx_list</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.set_transaction_hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets event_hash to transaction
+When event will be created and tx will be inserted,
+we should mark tx as send, and store event hash
+(so that later we will be able to delete tx by event hash)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tx_list</strong> (<em>tuple</em>) – transaction to set</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the setting operation successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.set_transaction_round">
+<code class="descname">set_transaction_round</code><span class="sig-paren">(</span><em>ev_hash</em>, <em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.set_transaction_round" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.sign_consensus">
+<code class="descname">sign_consensus</code><span class="sig-paren">(</span><em>count</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.sign_consensus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signs some consensus</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>count</strong> (<em>int</em>) – how many consensuses should be signed</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the sign operation successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prisma.db.database.PrismaDB.unset_unchecked_signature">
+<code class="descname">unset_unchecked_signature</code><span class="sig-paren">(</span><em>last_round</em><span class="sig-paren">)</span><a class="headerlink" href="#prisma.db.database.PrismaDB.unset_unchecked_signature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes all unchecked signatures
+(unchecked means that we have not compared this remote hash with our local)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>last_round</strong> (<em>int</em>) – last round of state</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">was the delete operation successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-prisma.db">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-prisma.db" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="prisma.network.html" class="btn btn-neutral float-right" title="prisma.network package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="prisma.cryptograph.html" class="btn btn-neutral" title="prisma.cryptograph package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, The Prisma Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
