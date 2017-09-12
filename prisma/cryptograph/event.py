@@ -10,8 +10,7 @@ Licensed under the GNU Lesser General Public License, version 3 or later. See LI
 import logging
 from collections import namedtuple
 from json import dumps
-from time import time
-
+from prisma.utils.common import Common
 from prisma.manager import Prisma
 from prisma.crypto.crypto import Crypto
 
@@ -42,6 +41,7 @@ class Event(object):
         """
         self.graph = graph
         self.crypto = Crypto()
+        self.common = Common()
         self.logger = logging.getLogger('Event')
 
     @staticmethod
@@ -75,7 +75,7 @@ class Event(object):
         """
         self.logger.debug("NEW_EVENT: %s %s", str(d), str(p))
 
-        t = time()
+        t = self.common.get_timestamp()
         s = self.crypto.sign_event(dumps((d, p, t, self.graph.keystore['publicKey'].decode())),
                                    self.graph.keystore['privateKeySeed'])
         self.logger.debug("Sign: %s", s['sig_detached'])

@@ -23,7 +23,7 @@ class Common(object):
     @staticmethod
     def get_timestamp():
         from time import time
-        return int(round(time() * 1000))
+        return int(round(time() * 100000))
 
     def tuple_to_dict(self, event_tuple):
         """
