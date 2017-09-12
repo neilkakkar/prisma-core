@@ -78,6 +78,7 @@ class NetworkProtocol(NetstringReceiver):
             else:
                 raise Exception('Malformed payload: not a valid method.')
         except Exception as e:
+            self.logger.exception(str(e))
             self.d.errback(Exception('Error when receiving data: ' + str(e)))
 
     def send_data(self, data):

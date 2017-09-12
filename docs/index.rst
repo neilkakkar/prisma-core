@@ -40,6 +40,8 @@ Roadmap
 -------
 Our plan is to extend the platform onto cellular devices, having the cellphone act as a full temporary node while a payment occurs not involving any third party wallet gateway. Also a NFC payment solution will be offered, this will make it easy for 2 party's to make payments using a cellular device. Also a multi-signature wallets from cellular devices will be proposed. This means full decentralization. The future usage of Prisma also demands development in a more performance efficient language. We will therefore develop a Rust version with the help of the reference implementation.
 
+install_debian_9
+signed_state_doc
 modules
 api
 

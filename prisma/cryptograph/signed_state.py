@@ -7,7 +7,7 @@ Licensed under the GNU Lesser General Public License, version 3 or later. See LI
 
 import logging
 import collections
-from json import dumps, loads
+from json import dumps
 
 from prisma.manager import Prisma
 from prisma.crypto.crypto import Crypto
@@ -64,11 +64,10 @@ class SignedStateManager(object):
 
         data = {'last_round': consensus[-1], 'hash': state_hash}
         self.logger.debug("State signature data %s", str(data))
-        data = self.crypto.sign_event(dumps(data), self.graph.keystore['privateKeySeed'])
 
         # Form transaction
         data['type'] = TYPE_SIGNED_STATE
-        hex_str = self.transaction.hexify_transaction(data)
+        hex_str = self.transaction.hexlify_transaction(data)
 
         Prisma().db.set_consensus_last_created_sign(consensus[-1])
         return hex_str
@@ -134,7 +133,7 @@ class SignedStateManager(object):
                     # if there is enough consensus to sign
                     if (len(local_consensus) != self.graph.to_sign_count or
                             not self.update_state_sign(local_consensus)):
-                            break
+                        break
 
     def update_state_sign(self, local_consensus):
         """

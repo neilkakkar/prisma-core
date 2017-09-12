@@ -50,7 +50,6 @@ class PrismaManager:
         """
         Start the app.
 
-        :param database:
         :param is_prompt:
         :return:
         """
