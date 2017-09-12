@@ -45,11 +45,10 @@ class Transaction(object):
         :rtype: string or bool
         """
         try:
-            res = hexlify(bytes(json.dumps(tx).encode('utf-8'))).decode('utf-8')
-            return res
+            return hexlify(bytes(json.dumps(tx).encode('utf-8'))).decode('utf-8')
         except Exception as e:
-            self.logger.error("Failed to hexlify tx, error %s", str(e))
-            return False
+            self.logger.error("Failed to hexlify transaction. Reason: {0}".format(e))
+        return False
 
     @staticmethod
     def unhexlify_transaction(tx_hex):
@@ -59,7 +58,11 @@ class Transaction(object):
         :param tx_hex:
         :return: dict
         """
-        return json.loads(unhexlify(tx_hex).decode('utf-8'))
+        try:
+            return json.loads(unhexlify(tx_hex).decode('utf-8'))
+        except Exception as e:
+            self.logger.error("Failed to unhexlify transaction. Reason: {0}".format(e))
+        return False
 
     def form_money_transfer_tx(self, keys, recipient_id, amount):
         """
@@ -78,6 +81,7 @@ class Transaction(object):
             "recipientId": recipient_id,
             "timestamp": self.common_functions.get_timestamp()
         }
+
         return self.hexlify_transaction(tx)
 
     def generate_transaction_id(self, tx_hex):
