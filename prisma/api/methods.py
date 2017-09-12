@@ -108,7 +108,7 @@ class ApiMethods:
         :param to_address: address
         :param amount: int
         """
-        transaction = Prisma().wallet.transaction.form_transaction(Prisma().graph.keystore, to_address, amount)
+        transaction = Prisma().wallet.transaction.form_money_transfer_tx(Prisma().graph.keystore, to_address, amount)
         Prisma().wallet.transaction.insert_transactions_into_pool([transaction])
         return {'transaction': Prisma().wallet.transaction.unhexify_transaction(transaction)}
 
@@ -132,7 +132,7 @@ class ApiMethods:
             raise Exception('It\'s not possible to send from another wallet different than the main wallet atm. Sorry!')
         else:
             keystore = Prisma().graph.keystore
-        transaction = Prisma().wallet.transaction.form_transaction(keystore, to_address, amount)
+        transaction = Prisma().wallet.transaction.form_money_transfer_tx(keystore, to_address, amount)
         Prisma().wallet.transaction_buffer_add(transaction)
         return {'transaction_stored': Prisma().wallet.transaction.unhexify_transaction(transaction)}
 

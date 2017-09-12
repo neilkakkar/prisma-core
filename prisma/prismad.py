@@ -11,7 +11,7 @@ import signal
 from twisted.python import log
 from twisted.internet import reactor
 
-from prisma.manager import Prisma
+from prisma.manager import Prisma, __version__
 from prisma.config import CONFIG
 from prisma.crypto.wallet import Wallet
 
@@ -29,9 +29,14 @@ def main():
     parser.add_argument('--database', help='mongodb database name')
     parser.add_argument('--prompt', '-p', action='store_true', help='show prompt')
     parser.add_argument('--log', '-l', help='log into a file')
+    parser.add_argument('--version', action='store_true', help='print version')
     parser.add_argument('-v', action='store_true', help='verbose')
     parser.add_argument('-vv', action='store_true', help='very verbose')
     args = parser.parse_args()
+
+    if args.version:
+        print('Prisma v{0}'.format(__version__))
+        exit(0)
 
     wallet = Wallet()
 

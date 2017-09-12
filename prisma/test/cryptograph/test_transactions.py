@@ -1,6 +1,3 @@
-import json
-from binascii import unhexlify
-
 from prisma.test.testutils.testcase import PrismaTestCase
 
 
@@ -20,17 +17,23 @@ class PrismaCryptographTransactions(PrismaTestCase):
         keystore_genesis = self._create_test_keystore()
 
         # create transaction for main account to have some money
-        transaction_hex = self.prisma.wallet.transaction.form_transaction(keystore_genesis, keystore['address'], 1000)
-        transaction = self.prisma.wallet.transaction.unhexify_transaction(transaction_hex)
-        transaction_dict = json.loads(unhexlify(transaction['tx_hex']).decode('utf-8'))
-        transaction_dict['tx_dict_hex'] = transaction_hex
-        self.prisma.db.insert_transactions([transaction_dict])
+        transaction_hex = self.prisma.wallet.transaction.form_money_transfer_tx(
+            keystore_genesis,
+            keystore['address'],
+            1000
+        )
+        transaction = self.prisma.wallet.transaction.unhexlify_transaction(transaction_hex)
+        self.prisma.db.insert_transactions([transaction])
 
         self.assertTrue(self.prisma.db.get_account_balance(keystore['address']) == 1000)
 
         # create a transaction to alt
         recipient_address = '3558462963507083618PR'
-        transaction_hex = self.prisma.wallet.transaction.form_transaction(keystore, recipient_address, 1)
+        transaction_hex = self.prisma.wallet.transaction.form_money_transfer_tx(
+            keystore,
+            recipient_address,
+            1
+        )
         self.prisma.wallet.transaction.insert_transactions_into_pool([transaction_hex])
 
         self.assertTrue(self.prisma.db.get_account_balance(keystore['address']) == 999)
