@@ -155,17 +155,19 @@ class Transaction(object):
         :return: insertion result
         :rtype: bool
         """
-        prepared_tx_list = []
-        for tx_hex in tx_list:
-            tx = self.parse_transaction_hex(tx_hex)
-            if tx:
-                tx['tx_dict_hex'] = tx_hex
-                self.logger.debug("Prepared for pool tx %s", str(tx))
-                prepared_tx_list.append(tx)
-            else:
-                self.logger.error("Skipping inserting malformed transaction %s", str(tx))
-                continue
-        return Prisma().db.insert_transactions(prepared_tx_list)
+        if tx_list:
+            prepared_tx_list = []
+            for tx_hex in tx_list:
+                tx = self.parse_transaction_hex(tx_hex)
+                if tx:
+                    tx['tx_dict_hex'] = tx_hex
+                    self.logger.debug("Prepared for pool tx %s", str(tx))
+                    prepared_tx_list.append(tx)
+                else:
+                    self.logger.error("Skipping inserting malformed transaction %s", str(tx))
+                    continue
+            return Prisma().db.insert_transactions(prepared_tx_list)
+        return False
 
     def insert_processed_transaction(self, ev_hash_list, round, private_key_seed):
         """

@@ -38,3 +38,4 @@ class PrismaCryptographTransactions(PrismaTestCase):
 
         self.assertTrue(self.prisma.db.get_account_balance(keystore['address']) == 999)
         self.assertTrue(self.prisma.db.get_account_balance(recipient_address) == 1)
+        
