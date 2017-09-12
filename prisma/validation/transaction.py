@@ -3,6 +3,7 @@ import logging
 TYPE_MONEY_TRANSFER = 0
 TYPE_SIGNED_STATE = 1
 
+
 class TxValidator(object):
 
     def __init__(self):
@@ -23,8 +24,8 @@ class TxValidator(object):
                 isinstance(int(address[:-2]), int)
                 return True
             except Exception as e:
-                self.logger.error("Recipient address not valid. Reason: {0}".format(e))
-        self.logger.error("Recipient address not valid.")
+                self.logger.error("Wallet address not valid. Reason: {0}".format(e))
+        self.logger.error("Wallet address not valid.")
         return False
 
     def amount(self, _amount):

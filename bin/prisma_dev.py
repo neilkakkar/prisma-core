@@ -35,7 +35,7 @@ class PrismaDev:
             # prepare tx
             tx_list = []
             for addr, amount in genesis_tx.items():
-                tx_list.append(wallet.transaction.form_money_transfer_tx(keys, addr, amount))
+                tx_list.append(wallet.transaction.form_funds_tx(keys, addr, amount))
             # create genesis
             t = time()
             s = crypto.sign_event(json.dumps((tx_list, (), t, keys['publicKey'].decode())), keys['privateKeySeed'])

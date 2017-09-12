@@ -13,6 +13,7 @@ from binascii import hexlify, unhexlify
 from prisma.manager import Prisma
 from prisma.utils.common import Common
 from prisma.crypto.crypto import Crypto
+from prisma.validation.transaction import TxValidator
 
 TYPE_MONEY_TRANSFER = 0
 TYPE_SIGNED_STATE = 1
@@ -25,6 +26,7 @@ class Transaction(object):
     def __init__(self):
         self.common_functions = Common()
         self.crypto = Crypto()
+        self.validator = TxValidator()
         self.logger = logging.getLogger('Transaction')
         self.genesis_event_hash = self.get_genesis_event_hash()
         self.logger.debug("genesis_event_hash %s", str(self.genesis_event_hash))
@@ -64,7 +66,7 @@ class Transaction(object):
             self.logger.error("Failed to unhexlify transaction. Reason: {0}".format(e))
         return False
 
-    def form_money_transfer_tx(self, keys, recipient_id, amount):
+    def form_funds_tx(self, keys, recipient_id, amount):
         """
         Wraps a transaction in an object.
 
@@ -73,14 +75,23 @@ class Transaction(object):
         :param amount:
         :return: self.finalize_transaction():
         """
-        tx = {
-            "type": str(TYPE_MONEY_TRANSFER),
-            "amount": amount,
-            "senderPublicKey": keys['publicKey'].decode(),
-            "senderId": keys['address'],
-            "recipientId": recipient_id,
-            "timestamp": self.common_functions.get_timestamp()
-        }
+        if amount and keys and 'address' in keys and \
+                'publicKey' in keys and recipient_id:
+
+            tx = {
+                "type": str(TYPE_MONEY_TRANSFER),
+                "amount": amount,
+                "senderPublicKey": keys['publicKey'].decode(),
+                "senderId": keys['address'],
+                "recipientId": recipient_id,
+                "timestamp": self.common_functions.get_timestamp()
+            }
+        else:
+            self.logger.error("Missing values in form transaction.")
+            return False
+
+        if not self.validator.transaction(tx):
+            return False
 
         return self.hexlify_transaction(tx)
 
