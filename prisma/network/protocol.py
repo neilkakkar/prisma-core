@@ -25,6 +25,11 @@ class NetworkProtocol(NetstringReceiver):
     This protocol will be used for communicate between peers. The methods are
     described in sync peers and sync events.
     """
+
+    # MAX_LENGTH Defines the maximum length of data that can be received.
+    # Right is is set to 1 million of characters after compression.
+    MAX_LENGTH = 1000000
+
     def __init__(self):
         self.logger = logging.getLogger('Protocol')
         self.validate = Validator()

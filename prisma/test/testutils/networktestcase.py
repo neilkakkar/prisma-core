@@ -2,7 +2,6 @@ import zlib
 from twisted.test import proto_helpers
 from twisted.internet import defer
 from twisted.protocols.test.test_basic import TestNetstring
-from twisted.protocols.basic import NetstringReceiver
 
 from prisma.test.testutils.testcase import PrismaTestCase
 
@@ -36,8 +35,7 @@ class NetworkTestCase(PrismaTestCase):
         error_message = reason.getErrorMessage()
         self.error = 'Error: {0}'.format(error_message)
 
-    @staticmethod
-    def _receive_netstring(payload):
+    def _receive_netstring(self, payload):
         """
         Create and connect to a Netstring to verify that the data is received correctly.
 
@@ -45,7 +43,7 @@ class NetworkTestCase(PrismaTestCase):
         """
         t = proto_helpers.StringTransport()
         p = TestNetstring()
-        p.MAX_LENGTH = NetstringReceiver.MAX_LENGTH
+        p.MAX_LENGTH = self.protocol.MAX_LENGTH
         p.makeConnection(t)
         p.dataReceived(payload)
         return p.received.pop()
