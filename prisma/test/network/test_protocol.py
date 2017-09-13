@@ -1,3 +1,4 @@
+import sys
 import json
 from twisted.internet import defer
 
@@ -14,7 +15,7 @@ class PrismaNetworkProtocolTestCase(NetworkTestCase):
         self.assertEqual(self.transport.value(), self._prepare_sending('{"test": "ok"}'))
 
     def test_testnetstring(self):
-        received = self._test_netstring(b'1:a,')
+        received = self._receive_netstring(b'1:a,')
         self.assertEqual(received, b'a')
 
     def test_send_get_peers(self):
@@ -36,3 +37,21 @@ class PrismaNetworkProtocolTestCase(NetworkTestCase):
             self.error = None
             self.protocol.d = defer.Deferred()
             self.protocol.d.addCallbacks(self._defer_pass, self._defer_error)
+
+    def test_less_max_length(self):
+        self.prisma.config.set('network', 'zlib_level', '0')
+        data = b''
+        for _ in range(0, self.protocol.MAX_LENGTH):
+            data = data + b'x'
+        self.protocol.sendString(data)
+        received = self._receive_netstring(self.transport.value())
+        self.assertEqual(len(received), self.protocol.MAX_LENGTH)
+
+    def test_more_max_length(self):
+        self.prisma.config.set('network', 'zlib_level', '0')
+        data = b''
+        for _ in range(0, self.protocol.MAX_LENGTH + 1):  # +1!
+            data = data + b'x'
+        self.protocol.sendString(data)
+        with self.assertRaises(IndexError):
+            _ = self._receive_netstring(self.transport.value())
