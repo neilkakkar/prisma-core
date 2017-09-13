@@ -13,6 +13,7 @@ from binascii import hexlify, unhexlify
 from prisma.manager import Prisma
 from prisma.utils.common import Common
 from prisma.crypto.crypto import Crypto
+from prisma.validation.transaction import TxValidator
 
 TYPE_MONEY_TRANSFER = 0
 TYPE_SIGNED_STATE = 1
@@ -25,6 +26,7 @@ class Transaction(object):
     def __init__(self):
         self.common_functions = Common()
         self.crypto = Crypto()
+        self.validator = TxValidator()
         self.logger = logging.getLogger('Transaction')
         self.genesis_event_hash = self.get_genesis_event_hash()
         self.logger.debug("genesis_event_hash %s", str(self.genesis_event_hash))
@@ -45,11 +47,10 @@ class Transaction(object):
         :rtype: string or bool
         """
         try:
-            res = hexlify(bytes(json.dumps(tx).encode('utf-8'))).decode('utf-8')
-            return res
+            return hexlify(bytes(json.dumps(tx).encode('utf-8'))).decode('utf-8')
         except Exception as e:
-            self.logger.error("Failed to hexlify tx, error %s", str(e))
-            return False
+            self.logger.error("Failed to hexlify transaction. Reason: {0}".format(e))
+        return False
 
     @staticmethod
     def unhexlify_transaction(tx_hex):
@@ -59,9 +60,13 @@ class Transaction(object):
         :param tx_hex:
         :return: dict
         """
-        return json.loads(unhexlify(tx_hex).decode('utf-8'))
+        try:
+            return json.loads(unhexlify(tx_hex).decode('utf-8'))
+        except Exception as e:
+            self.logger.error("Failed to unhexlify transaction. Reason: {0}".format(e))
+        return False
 
-    def form_money_transfer_tx(self, keys, recipient_id, amount):
+    def form_funds_tx(self, keys, recipient_id, amount):
         """
         Wraps a transaction in an object.
 
@@ -70,14 +75,24 @@ class Transaction(object):
         :param amount:
         :return: self.finalize_transaction():
         """
-        tx = {
-            "type": str(TYPE_MONEY_TRANSFER),
-            "amount": amount,
-            "senderPublicKey": keys['publicKey'].decode(),
-            "senderId": keys['address'],
-            "recipientId": recipient_id,
-            "timestamp": self.common_functions.get_timestamp()
-        }
+        if amount and keys and 'address' in keys and \
+                'publicKey' in keys and recipient_id:
+
+            tx = {
+                "type": str(TYPE_MONEY_TRANSFER),
+                "amount": amount,
+                "senderPublicKey": keys['publicKey'].decode(),
+                "senderId": keys['address'],
+                "recipientId": recipient_id,
+                "timestamp": self.common_functions.get_timestamp()
+            }
+        else:
+            self.logger.error("Missing values in form transaction.")
+            return False
+
+        if not self.validator.transaction(tx):
+            return False
+
         return self.hexlify_transaction(tx)
 
     def generate_transaction_id(self, tx_hex):
@@ -140,17 +155,19 @@ class Transaction(object):
         :return: insertion result
         :rtype: bool
         """
-        prepared_tx_list = []
-        for tx_hex in tx_list:
-            tx = self.parse_transaction_hex(tx_hex)
-            if tx:
-                tx['tx_dict_hex'] = tx_hex
-                self.logger.debug("Prepared for pool tx %s", str(tx))
-                prepared_tx_list.append(tx)
-            else:
-                self.logger.error("Skipping inserting malformed transaction %s", str(tx))
-                continue
-        return Prisma().db.insert_transactions(prepared_tx_list)
+        if tx_list:
+            prepared_tx_list = []
+            for tx_hex in tx_list:
+                tx = self.parse_transaction_hex(tx_hex)
+                if tx:
+                    tx['tx_dict_hex'] = tx_hex
+                    self.logger.debug("Prepared for pool tx %s", str(tx))
+                    prepared_tx_list.append(tx)
+                else:
+                    self.logger.error("Skipping inserting malformed transaction %s", str(tx))
+                    continue
+            return Prisma().db.insert_transactions(prepared_tx_list)
+        return False
 
     def insert_processed_transaction(self, ev_hash_list, round, private_key_seed):
         """

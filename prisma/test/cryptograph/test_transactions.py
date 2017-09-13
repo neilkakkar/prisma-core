@@ -17,7 +17,7 @@ class PrismaCryptographTransactions(PrismaTestCase):
         keystore_genesis = self._create_test_keystore()
 
         # create transaction for main account to have some money
-        transaction_hex = self.prisma.wallet.transaction.form_money_transfer_tx(
+        transaction_hex = self.prisma.wallet.transaction.form_funds_tx(
             keystore_genesis,
             keystore['address'],
             1000
@@ -29,7 +29,7 @@ class PrismaCryptographTransactions(PrismaTestCase):
 
         # create a transaction to alt
         recipient_address = '3558462963507083618PR'
-        transaction_hex = self.prisma.wallet.transaction.form_money_transfer_tx(
+        transaction_hex = self.prisma.wallet.transaction.form_funds_tx(
             keystore,
             recipient_address,
             1
@@ -38,3 +38,4 @@ class PrismaCryptographTransactions(PrismaTestCase):
 
         self.assertTrue(self.prisma.db.get_account_balance(keystore['address']) == 999)
         self.assertTrue(self.prisma.db.get_account_balance(recipient_address) == 1)
+        
