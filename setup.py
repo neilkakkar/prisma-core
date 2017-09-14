@@ -14,6 +14,7 @@ setup(
         'pymongo==3.4.0',
         'pynacl==1.1.2',
         'twisted==17.1.0',
+        'packaging==16.8'
     ],
     classifiers=[
         "Programming Language :: Python :: 3.5"
