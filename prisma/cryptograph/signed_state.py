@@ -7,7 +7,7 @@ Licensed under the GNU Lesser General Public License, version 3 or later. See LI
 
 import logging
 import collections
-from json import dumps
+from json import dumps, loads
 
 from prisma.manager import Prisma
 from prisma.crypto.crypto import Crypto
@@ -52,10 +52,17 @@ class SignedStateManager(object):
         state_db = Prisma().db.get_state(consensus[-1])
         if not state_db:
             # Generate state for round
-            balance = Prisma().db.get_account_balance_many(
+
+            # Balance
+            balance_dict = Prisma().db.get_account_balance_many(
                 [consensus[0], consensus[-1]])
-            state = collections.OrderedDict(sorted(balance.items()))
+            balance = collections.OrderedDict(sorted(balance_dict.items()))
+            #balance_hash = self.crypto.blake_hash(bytes(dumps(balance).encode('utf-8')))
+
+            state = collections.OrderedDict(
+                [('balance', balance)])
             state_hash = self.crypto.blake_hash(bytes(dumps(state).encode('utf-8')))
+
             Prisma().db.delete_money_transfer_transaction_less_than(consensus[-1])
             Prisma().db.insert_state(state, consensus[-1], state_hash)
         else:
@@ -64,12 +71,17 @@ class SignedStateManager(object):
 
         data = {'last_round': consensus[-1], 'hash': state_hash}
         self.logger.debug("State signature data %s", str(data))
+        sign_data = self.crypto.sign_event(dumps(data), self.graph.keystore['privateKeySeed'])
 
         # Form transaction
-        data['type'] = TYPE_SIGNED_STATE
-        hex_str = self.transaction.hexlify_transaction(data)
+        sign_data['type'] = TYPE_SIGNED_STATE
+        hex_str = self.transaction.hexlify_transaction(sign_data)
 
         Prisma().db.set_consensus_last_created_sign(consensus[-1])
+        # Save our signature in orrder to send it to new node
+        data['sign'] = sign_data
+        Prisma().db.insert_signature(data)
+
         return hex_str
 
     def get_con_signatures(self):
@@ -133,7 +145,7 @@ class SignedStateManager(object):
                     # if there is enough consensus to sign
                     if (len(local_consensus) != self.graph.to_sign_count or
                             not self.update_state_sign(local_consensus)):
-                        break
+                            break
 
     def update_state_sign(self, local_consensus):
         """
@@ -177,14 +189,17 @@ class SignedStateManager(object):
             # All stored unchecked signatures are processed now, so we can delete them
             Prisma().db.unset_unchecked_signature(local_signatures['_id'])
 
+        ''' There are no new valid signatures '''
+        if not unchecked_len:
+            return False
+
         ''' Calculates total count of valid signatures '''
         sign_count = unchecked_len
         if 'sign' in local_signatures:
             sign_count += len(local_signatures['sign'])
 
         ''' If there are enough signatures, signs consensus and cleans db '''
-        # sign + 1, for our self sign
-        if (sign_count + 1) >= self.graph.min_s:
+        if sign_count >= self.graph.min_s:
             self.logger.debug("Signs consensus")
 
             Prisma().db.sign_consensus(self.graph.to_sign_count)
@@ -211,18 +226,16 @@ class SignedStateManager(object):
         Prisma().db.delete_witnesses_less_than(last_signed)
 
         # Gets list of signed events
-        hash_list = Prisma().db.get_rounds_less_than(last_signed)
+        hash_list = Prisma().db.get_rounds_hash_list(last_signed)
         for _hash in hash_list:
             Prisma().db.delete_event(_hash)
             Prisma().db.delete_can_see(_hash)
             Prisma().db.delete_votes(_hash)
-            Prisma().db.delete_height(_hash)
             Prisma().db.delete_famous(_hash)
 
         ''' We should clear references after removing documents by hash.
             In this case we will get much better performance '''
         # Delete each link to signed events
-        Prisma().db.delete_round_less_than(last_signed)
         Prisma().db.delete_references_can_see(hash_list)
 
     def update_state(self):

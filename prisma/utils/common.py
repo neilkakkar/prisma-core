@@ -73,37 +73,7 @@ class Common(object):
                     return False
         return evtuple_dict
 
-    def dict_to_tuple_sign(self, sign_dict):
-        """
-        Converts a list dictionaries to a named tuples of type Event.
-        This returns a tuple without the key which is the blake2bhash. We can calculate this again by calling
-        that function in crypto.
-
-        :param sign_dict: list of dictionaries of events. See documentation
-        :return: dict of tuples.
-        :rtype: tuples ('Con_sign', 'd p t c s')
-        """
-        if len(sign_dict) > 0:
-            try:
-                # Restore the original ordering in named tuple. We will do a blake2b hash on this bytes(tuple) and
-                # is therefore important.
-                con_tuple = Sign_(
-                    sign_dict['signed'],
-                    sign_dict['sig_detached'],
-                    sign_dict['verify_key'])
-                if con_tuple:
-                    result = con_tuple
-                    return result
-            except Exception as e:
-                self.logger.error("Could not convert dict to named tuple. Reason:", e)
-                return False
-        return []
-
-    @staticmethod
-    def restore_con_sign(t):
-        return Sign_(t[0], t[1], t[2])
-
-    def read_genesis_event(self):
+    def read_genesis_state(self):
         """
         Read genesis event from json file.
 

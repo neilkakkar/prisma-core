@@ -228,12 +228,15 @@ class CryptographCommon(object):
         :rtype: set
         """
         self.logger.debug("strongly_see start h = %s, r = %s", str(h), str(r))
+        self.logger.debug("Witneeses on round r %s", str(Prisma().db.get_witness(r)))
         hits = defaultdict(int)
         for c, k in Prisma().db.get_can_see(h).items():
             self.logger.debug("strongly_see k = %s ", str(k))
+            self.logger.debug("strongly_see k (round) = %s", str(Prisma().db.get_round(k)))
             if Prisma().db.get_round(k) == r:
                 for c_, k_ in Prisma().db.get_can_see(k).items():
                     self.logger.debug("strongly_see k______ = %s ", str(k_))
+                    self.logger.debug("strongly_see k______(round) = %s ", str(Prisma().db.get_round(k_)))
                     if Prisma().db.get_round(k_) == r:
                         # TODO change it to node stake
                         hits[c_] += 1

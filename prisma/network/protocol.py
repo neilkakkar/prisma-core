@@ -71,7 +71,7 @@ class NetworkProtocol(NetstringReceiver):
             if data['method'] == 'get_state':
                 SyncState.handle_get_state(self)
             elif data['method'] == 'get_state_response':
-                SyncState.handle_get_state_response(self, data['state'])
+                SyncState.handle_get_state_response(self, data)
             elif data['method'] == 'get_peers':
                 SyncPeers.handle_get_peers(self, data['_id'], data['port'], data['latest_event'])
             elif data['method'] == 'get_peers_response':
