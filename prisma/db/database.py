@@ -46,6 +46,8 @@ class PrismaDB(object):
             sys.exit(1)
 
         self.logger.info('MongoDB v%s, using database "%s".', self.get_version(), self.get_db_name())
+        self.collections_list = ['events', 'rounds', 'can_see', 'height', 'head', 'peers', 'witness', 'famous',
+                                 'votes', 'transactions', 'consensus', 'signature', 'state']
         self.create_collections()
         self.create_indexes()
 
@@ -97,108 +99,45 @@ class PrismaDB(object):
         :return: was the creation successful
         :rtype: bool
         """
-        try:
-            self.db.create_collection('events')
-        except CollectionInvalid:
-            pass
-        except Exception as e:
-            self.logger.error('Could not create collection: %s. Reason: %s', 'events', str(e))
-            return False
+        for collection in self.collections_list:
+            try:
+                self.db.create_collection(collection)
+            except CollectionInvalid:
+                pass
+            except Exception as e:
+                self.logger.error('Could not create collection: %s. Reason: %s', collection, str(e))
+                return False
 
-        try:
-            self.db.create_collection('rounds')
-        except CollectionInvalid:
-            pass
-        except Exception as e:
-            self.logger.error('Could not create collection: %s. Reason: %s', 'rounds', str(e))
-            return False
+        return True
 
-        try:
-            self.db.create_collection('can_see')
-        except CollectionInvalid:
-            pass
-        except Exception as e:
-            self.logger.error('Could not create collection: %s. Reason: %s', 'can_see', str(e))
-            return False
+    def drop_collections_many(self, exceptions=[]):
+        """
+        Drop all collections exept given ones
 
-        try:
-            self.db.create_collection('height')
-        except CollectionInvalid:
-            pass
-        except Exception as e:
-            self.logger.error('Could not create collection: %s. Reason: %s', 'height', str(e))
-            return False
+        :param exceptions: collections that should not be deleted
+        :type exceptions: list
+        :return: was the drop operation successful
+        :rtype: bool
+        """
+        for collection_name in self.collections_list:
+            if collection_name not in exceptions:
+                if not self.drop_collection(collection_name):
+                    return False
+        return True
 
-        try:
-            self.db.create_collection('head')
-        except CollectionInvalid:
-            pass
-        except Exception as e:
-            self.logger.error('Could not create collection: %s. Reason: %s', 'head', str(e))
-            return False
+    def drop_collection(self, collection_name):
+        """
+        Drop one collection from db
 
+        :param collection_name: name of collection to drop
+        :type collection_name: str
+        :return: was the drop operation successful
+        :rtype: bool
+        """
         try:
-            self.db.create_collection('peers')
-        except CollectionInvalid:
-            pass
+            getattr(self.db, collection_name).drop()
         except Exception as e:
-            self.logger.error('Could not create collection: %s. Reason: %s', 'peers', str(e))
-            return False
-
-        try:
-            self.db.create_collection('witness')
-        except CollectionInvalid:
-            pass
-        except Exception as e:
-            self.logger.error('Could not create collection: %s. Reason: %s', 'witness', str(e))
-            return False
-
-        try:
-            self.db.create_collection('famous')
-        except CollectionInvalid:
-            pass
-        except Exception as e:
-            self.logger.error('Could not create collection: %s. Reason: %s', 'famous', str(e))
-            return False
-
-        try:
-            self.db.create_collection('votes')
-        except CollectionInvalid:
-            pass
-        except Exception as e:
-            self.logger.error('Could not create collection: %s. Reason: %s', 'votes', str(e))
-            return False
-
-        try:
-            self.db.create_collection('transactions')
-        except CollectionInvalid:
-            pass
-        except Exception as e:
-            self.logger.error('Could not create collection: %s. Reason: %s', 'transactions', str(e))
-            return False
-
-        try:
-            self.db.create_collection('consensus')
-        except CollectionInvalid:
-            pass
-        except Exception as e:
-            self.logger.error('Could not create collection: %s. Reason: %s', 'consensus', str(e))
-            return False
-
-        try:
-            self.db.create_collection('signature')
-        except CollectionInvalid:
-            pass
-        except Exception as e:
-            self.logger.error('Could not create collection: %s. Reason: %s', 'signatures', str(e))
-            return False
-
-        try:
-            self.db.create_collection('state')
-        except CollectionInvalid:
-            pass
-        except Exception as e:
-            self.logger.error('Could not create collection: %s. Reason: %s', 'state', str(e))
+            self.logger.error('Could not delete collection: %s. Reason: %s', collection_name, str(e))
             return False
 
         return True
@@ -237,13 +176,12 @@ class PrismaDB(object):
                             self.logger.error("Could not find hash in rounds !")
                             return False
 
-                        if rnd > last_signed \
-                                or self.get_event(p, as_tuple=False):
+                        if rnd > last_signed:
                             new_parents_list.append(p)
                     cg_dict[event_id]['p'] = new_parents_list
 
+            self.logger.debug("Get from Events %s", str(cg_dict))
             if as_tuple and len(_event) > 0:
-                self.logger.debug("Get from Events %s", str(self.common.dict_to_tuple(cg_dict)))
                 return self.common.dict_to_tuple(cg_dict)[event_id]
             return cg_dict
         except Exception as e:
@@ -344,8 +282,7 @@ class PrismaDB(object):
         :param h: event hash(key)
         :type h: str
         :return:    * round -  if the document was found in collection
-                    * 0     - if the document was not found in collection
-                    * False   - in the case of error
+                    * False   - if the document was not found in collection OR in the case of error
         :rtype: int
         """
         if h:
@@ -355,22 +292,26 @@ class PrismaDB(object):
                     self.logger.debug("Get from Rounds for hash %s, round = %s", str(h), str(_round['round']))
                     return _round['round']
                 """ If the round data does not exist, is it safe to assume its round is 0? """
-                return 0
             except Exception as e:
                 self.logger.error("Could not get round. Reason: %s", str(e))
                 self.logger.debug("Event:", h)
-                return False
+        return False
 
-    def get_rounds_many(self):
+    def get_rounds_many(self, less_than=False):
         """
         Gets all rounds from db
 
+        :param less_than: limitation for round num
+        :type less_than: int/bool(by default)
         :return: round for every hash or False if error
         :rtype: dict or bool
         """
         rounds_dict = {}
         try:
-            _rounds = self.db.rounds.find()
+            if less_than:
+                _rounds = self.db.rounds.find({'round': {'$lte': less_than}})
+            else:
+                _rounds = self.db.rounds.find()
             if _rounds:
                 for r in _rounds:
                     if '_id' in r and 'round' in r:
@@ -402,18 +343,18 @@ class PrismaDB(object):
             self.logger.error("Could not get max round from Round. Reason: %s", str(e))
         return False
 
-    def get_rounds_less_than(self, value):
+    def get_rounds_hash_list(self, value):
         """
-        Gets documents with round less than given value
+        Gets hashes of events with round less than given value
 
         :param value: start round num
         :type value: int
         :return: id (hash) values from all documents with round less than given value
-        :rtype: tuple
+        :rtype: list
         """
         hash_list = []
         try:
-            _hashes = self.db.rounds.find({'round': {'$lt': value}})
+            _hashes = self.db.rounds.find({'round_handled': {'$lte': value}})
             if _hashes:
                 for h in _hashes:
                     if '_id' in h and 'round' in h:
@@ -424,27 +365,27 @@ class PrismaDB(object):
             self.logger.error("Could not get from rounds less than %s. Reason: %s", str(value), str(e))
         return False
 
-    def get_rounds_hash_list(self, r):
+    def get_rounds_less_than(self, r):
         """
-        Gets hashes of all events with given round
+        Gets documents with round less than given one
 
         :param r: round num
         :type r: int
-        :return: list of all events hashes with given round
-        :rtype: tuple
+        :return: documents with round less than given one
+        :rtype: list
         """
-        hash_list = []
         try:
-            _hashes = self.db.rounds.find({'round': r})
+            res_dict = {}
+            _hashes = self.db.rounds.find({'round': {'$lt': r}})
             if _hashes:
                 for h in _hashes:
                     if '_id' in h and 'round' in h:
-                        hash_list.append(h['_id'])
+                        res_dict[h['_id']] = h['round']
                     self.logger.debug("Get hash list from Rounds, round = %s", str(r))
-            return hash_list
+            return res_dict
         except Exception as e:
             self.logger.error("Could not get hash list from Rounds. Reason: %s", str(e))
-        return []
+            return False
 
     def insert_round(self, round_info):
         """
@@ -459,14 +400,39 @@ class PrismaDB(object):
             if round_info:
                 self.logger.debug("Insert into Rounds %s", str(round_info))
                 for round_id in round_info:
-                    self.logger.debug("result %s", str(self.db.rounds.insert_one(
-                        {'_id': round_id, 'round': round_info[round_id]})))
+                    res = self.db.rounds.update({'_id': round_id},
+                                                {'$set':{'_id': round_id, 'round': int(round_info[round_id])}}, upsert=True)
+                    self.logger.debug("Insert into Rounds collection result %s", str(res))
                 return True
         except DuplicateKeyError:
             self.logger.error("Could not insert round. Reason: duplicate (_id) round id.")
         except Exception as e:
             self.logger.error("Could not insert round. Reason: %s", str(e))
             self.logger.debug("Round:", round_info)
+        return False
+
+    def set_round_handled(self, round_info):
+        """
+        Set round when event was handled
+
+        :param round_info: dict in format {hash:round}
+        :type round_info: dict
+        :return: was the insertion successful
+        :rtype: bool
+        """
+        try:
+            if round_info:
+                self.logger.debug("Set round handled %s", str(round_info))
+                for round_id in round_info:
+                    self.db.rounds.update({'_id': round_id},
+                                                {'$set': {'round_handled': int(round_info[round_id])}}
+                                                , upsert=False)
+                return True
+        except DuplicateKeyError:
+            self.logger.error("Could not set handled round. Reason: duplicate (_id) round id.")
+        except Exception as e:
+            self.logger.error("Could not set handled round. Reason: %s", str(e))
+            self.logger.debug("Round info:", round_info)
         return False
 
     def delete_round_less_than(self, value):
@@ -481,6 +447,23 @@ class PrismaDB(object):
         try:
             self.logger.debug("Delete from Rounds less than %s", str(value))
             self.db.rounds.remove({'round': {'$lt': value}})
+            return True
+        except Exception as e:
+            self.logger.error("Could not delete round. Reason: %s", str(e))
+        return False
+
+    def delete_round_greater_than(self, value):
+        """
+        Deletes all documents with round greater than value
+
+        :param value: start round num
+        :type value: int
+        :return: was the delete operation successful
+        :rtype: bool
+        """
+        try:
+            self.logger.debug("Delete from Rounds greater than %s", str(value))
+            self.db.rounds.remove({'round': {'$gt': value}})
             return True
         except Exception as e:
             self.logger.error("Could not delete round. Reason: %s", str(e))
@@ -680,7 +663,7 @@ class PrismaDB(object):
                 for height_id in height_info:
                     self.logger.debug("Result %s", str(self.db.height.update(
                         {'_id': height_id},
-                        {'_id': height_id, 'height': height_info[height_id]},
+                        {'_id': height_id, 'height': int(height_info[height_id])},
                         upsert=True
                     )))
                 return True
@@ -762,15 +745,18 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
+
         try:
             if witness_info:
+                self.logger.debug("Insert into witness collection %s", str(witness_info))
                 for r in witness_info:
                     for key, val in witness_info[r].items():
-                        self.logger.debug("result %s", str(self.db.witness.update(
-                            {'_id': r},
+                        res = self.db.witness.update(
+                            {'_id': int(r)},
                             {'$set': {'witness.' + key: val}},
                             upsert=True
-                        )))
+                        )
+                        #self.logger.debug("Insert into witness collection result %s", str(res))
                 return True
         except Exception as e:
             self.logger.error("Could not insert witness. Reason: %s", str(e))
@@ -858,11 +844,11 @@ class PrismaDB(object):
                 {'$group': {'_id': 0,
                             'sender_wallets': {'$addToSet': '$senderId'},
                             'recipient_wallets': {'$addToSet': '$recipientId'}}},
-                {'$project': {'wallets': {'$setUnion': ['$sender_wallets', '$recipient_wallets']}}}])
+                {'$project': {'balance': {'$setUnion': ['$sender_wallets', '$recipient_wallets']}}}])
             if db_res:
                 for wal in db_res:
                     self.logger.debug("TX_WAL %s", str(wal))
-                    wallets |= set(wal['wallets'])
+                    wallets |= set(wal['balance'])
 
                 # Gets all wallets saved in state
                 wallets |= self.get_wallets_state()
@@ -1306,8 +1292,8 @@ class PrismaDB(object):
                     if 'consensus' in item:
                         self.logger.debug("Get consensus last sent %s", str(item['consensus']))
                         return item['consensus']
-            self.logger.debug("Last sent not found return -1")
-            return -1
+            self.logger.debug("Last sent not found return last signed consensus")
+            return self.get_consensus_last_signed()
         except Exception as e:
             self.logger.error("Could not get last sent from consensus. Reason: %s", str(e))
         return False
@@ -1349,7 +1335,23 @@ class PrismaDB(object):
         else:
             return -1
 
-    def insert_consensus(self, consensus):
+    def get_last_consensus(self):
+        """
+        Get last consensus round
+
+        :return: last consensus round
+        :rtype: int
+        """
+        try:
+            last_consensus = self.db.consensus.find({}).sort('consensus', -1).limit(1)
+            for res in last_consensus:
+                return res['consensus']
+            return -1
+        except Exception as e:
+            self.logger.error("Could not get consensus. Reason: %s", str(e))
+            return False
+
+    def insert_consensus(self, consensus, signed=False):
         """
         Inserts consensus into db
 
@@ -1359,8 +1361,8 @@ class PrismaDB(object):
         :rtype: bool
         """
         try:
-            for con in sorted(consensus):
-                self.db.consensus.insert({'consensus': con, 'signed': False})
+            for con in consensus:
+                self.db.consensus.insert({'consensus': con, 'signed': signed})
             return True
         except Exception as e:
             self.logger.error("Could not insert consensus. Reason: %s", str(e))
@@ -1377,7 +1379,7 @@ class PrismaDB(object):
         :rtype: int
         """
         try:
-            is_present = self.db.consensus.find({'_id': r}, {'_id': 1}).limit(1).count()
+            is_present = self.db.consensus.find({'consensus': r}, {'_id': 1}).limit(1).count()
             self.logger.debug("Check consensus for round = %s, result = %s", str(r), str(is_present))
             return is_present
         except Exception as e:
@@ -1571,7 +1573,7 @@ class PrismaDB(object):
         :return:
         """
         try:
-            state = list(self.db.state.find().sort('_id', DESCENDING).limit(1))
+            state = list(self.db.state.find().sort('_id', -1).limit(1))
             if not state:
                 return False
             return state[0]
@@ -1628,12 +1630,12 @@ class PrismaDB(object):
         :rtype: int
         """
         try:
-            db_res = self.db.state.find({'wallets.' + address: {'$exists': True}},
-                                           {'_id': 0, 'wallets.' + address: 1}).limit(1).sort('_id', -1)
+            db_res = self.db.state.find({'balance.' + address: {'$exists': True}},
+                                           {'_id': 0, 'balance.' + address: 1}).limit(1).sort('_id', -1)
             if db_res:
                 for balance in db_res:
-                    self.logger.debug("Get balance for address %s from state result = %s", str(address), str(balance['wallets'][address]))
-                    return balance['wallets'][address]
+                    self.logger.debug("Get balance for address %s from state result = %s", str(address), str(balance['balance'][address]))
+                    return balance['balance'][address]
                 else:
                     self.logger.debug("No balance for address %s, return 0", str(address))
                     return 0
@@ -1654,29 +1656,32 @@ class PrismaDB(object):
             if db_res:
                 for res in db_res:
                     self.logger.debug("Get wallets from state %s", str(res))
-                    wallets = set(res['wallets'].keys())
+                    wallets = set(res['balance'].keys())
                     return wallets
             return set()
         except Exception as e:
             self.logger.error("Could not get state. Reason: %s", str(e))
         return False
 
-    def insert_state(self, balance, round, hash):
+    def insert_state(self, state, round, hash, signed=False):
         """
         Inserts state into db
 
-        :param balance: balance for all wallets
-        :type balance: dict
+        :param state: state itself
+        :type state: dict
         :param round: last round of state
         :type round: int
         :param hash: state hash
         :type hash: str
+        :param signed: is state already signed
+        :type signed: bool
         :return: was the insertion successful
         :rtype: bool
         """
         try:
-            self.db.state.insert({'_id': round, 'wallets': balance, 'hash': hash})
-            self.logger.debug("Insert into state balance = %s, round = %s, hash = %s", str(balance), str(round), str(hash))
+            self.db.state.insert({'_id': round, 'balance': state['balance'], 'hash': hash, 'signed': signed})
+            self.logger.debug("Insert into state balance = %s, round = %s, hash = %s, signed = %s",
+                              str(state), str(round), str(hash), str(signed))
             return True
         except Exception as e:
             self.logger.error("Could not insert state. Reason: %s", str(e))

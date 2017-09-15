@@ -28,14 +28,6 @@ class Transaction(object):
         self.crypto = Crypto()
         self.validator = TxValidator()
         self.logger = logging.getLogger('Transaction')
-        self.genesis_event_hash = self.get_genesis_event_hash()
-        self.logger.debug("genesis_event_hash %s", str(self.genesis_event_hash))
-
-    def get_genesis_event_hash(self):
-        genesis_event = self.common_functions.read_genesis_event()
-        if not genesis_event:
-            sys.exit(1)
-        return list(genesis_event.keys())[0]
 
     def hexlify_transaction(self, tx):
         """
@@ -123,18 +115,15 @@ class Transaction(object):
         """
         return 10
 
-    def parse_transaction_hex(self, tx_hex, ev_hash=''):
+    def parse_transaction_hex(self, tx_hex):
         """
         Parse hex to a transaction dict.
 
         :param tx_hex:
-        :param ev_hash:
         :return: tx
         """
         try:
             tx = self.unhexlify_transaction(tx_hex)
-            if ev_hash == self.genesis_event_hash:
-                return tx
             if int(tx['type']) == TYPE_MONEY_TRANSFER:
                 sender_balance = Prisma().db.get_account_balance(tx['senderId'])
                 if tx['amount'] > sender_balance:
@@ -190,15 +179,16 @@ class Transaction(object):
         for event_hash in ev_hash_list:
             self.logger.debug("insert_processed_transaction for ev with hash %s", str(event_hash))
             event = Prisma().db.get_event(event_hash)
+            Prisma().db.set_round_handled({event_hash: round})
             self.logger.debug("insert_transaction_by_ev_hash event %s", str(event))
-            if not len(event):
+            if not event:
                 self.logger.error("Could not insert tx, event there is no event !")
                 return False
 
             if len(event.d) > 0:
                 if event.c != self_verify_key:
                     for tx_hex in event.d:
-                        tx = self.parse_transaction_hex(tx_hex, event_hash)
+                        tx = self.parse_transaction_hex(tx_hex)
                         # Money transfer
                         if (tx and 'type' in tx and int(tx['type']) == TYPE_MONEY_TRANSFER and
                                 'amount' in tx and 'senderId' in tx and 'recipientId' in tx):
