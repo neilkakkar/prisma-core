@@ -25,6 +25,11 @@ class NetworkProtocol(NetstringReceiver):
     This protocol will be used for communicate between peers. The methods are
     described in sync peers and sync events.
     """
+
+    # MAX_LENGTH Defines the maximum length of data that can be received.
+    # Right is is set to 1 million of characters after compression.
+    MAX_LENGTH = 1000000
+
     def __init__(self):
         self.logger = logging.getLogger('Protocol')
         self.validate = Validator()
@@ -66,7 +71,7 @@ class NetworkProtocol(NetstringReceiver):
             if data['method'] == 'get_state':
                 SyncState.handle_get_state(self)
             elif data['method'] == 'get_state_response':
-                SyncState.handle_get_state_response(self, data['state'])
+                SyncState.handle_get_state_response(self, data)
             elif data['method'] == 'get_peers':
                 SyncPeers.handle_get_peers(self, data['_id'], data['port'], data['latest_event'])
             elif data['method'] == 'get_peers_response':

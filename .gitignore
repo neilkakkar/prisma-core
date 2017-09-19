@@ -9,3 +9,5 @@ _trial_temp/
 *.egg-info/
 .cache/
 __pycache__/
+build/
+dist/

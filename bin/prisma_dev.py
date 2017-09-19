@@ -1,14 +1,38 @@
 import sys
 import json
+import collections
+
 from time import time
+from json import dumps, dump, load
 from pymongo import MongoClient
 
 from prisma.manager import Prisma
+from prisma.crypto.crypto import Crypto
 
 
 class PrismaDev:
     def __init__(self):
+        self.genesis_balances_file = 'bin/balances.json'
+        self.genesis_output_file = 'prisma/cryptograph/genesis.json'
         self.db_connection = MongoClient(serverSelectionTimeoutMS=2000, connect=False)
+
+    def write_JSON_to_file(self, path, data):
+        try:
+            with open(path, "w") as storage:
+                dump(data, storage)
+                print('Successfully wrote genesis event.')
+        except Exception as e:
+            print('Could not write genesis event . Reason: ', e)
+        return False
+
+    def read_JSON_from_file(self, path):
+        try:
+            with open(path) as genesis_file:
+                res = load(genesis_file)
+            return res
+        except Exception as e:
+            print('Could not read from file, path:', path, e)
+        return False
 
     def main(self):
         if len(sys.argv) == 1:
@@ -20,29 +44,22 @@ class PrismaDev:
                 if database != 'local':
                     self._destroy_db(database)
         elif sys.argv[1] == 'genesis':
-            Prisma().start(False)
-            wallet = Prisma().wallet
-            crypto = wallet.crypto
-            genesis_tx = {
-                '3918807197700602162PR': 100000,
-                '3558462963507083618PR': 100000,
-                '7306589250910697267PR': 300000
-            }
+            balances = self.read_JSON_from_file(self.genesis_balances_file)
             # generate random wallet issuer of the genesis event
-            keys = wallet.new_wallet('password', False)
-            if not keys:
-                raise Exception('Error while generating wallet')
-            # prepare tx
-            tx_list = []
-            for addr, amount in genesis_tx.items():
-                tx_list.append(wallet.transaction.form_funds_tx(keys, addr, amount))
-            # create genesis
-            t = time()
-            s = crypto.sign_event(json.dumps((tx_list, (), t, keys['publicKey'].decode())), keys['privateKeySeed'])
-            ev = [tx_list, (), t, s['verify_key'], s['signed']]
-            genesis_json = {crypto.blake_hash(bytes(json.dumps(ev).encode('utf-8'))): ev}
-            # print genesis_json
-            print(json.dumps(genesis_json))
+            balance = collections.OrderedDict(sorted(balances.items()))
+
+            state = {'balance': balance}
+            state_hash = Crypto().blake_hash(bytes(dumps(state).encode('utf-8')))
+
+            genesis = {
+                'state': state,
+                'round': -1,
+                'hash': state_hash,
+                'signed': True
+            }
+
+            print(genesis)
+            self.write_JSON_to_file(self.genesis_output_file, genesis)
 
     def _destroy_db(self, database):
         self.db_connection.drop_database(database)

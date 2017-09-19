@@ -71,6 +71,11 @@ class SyncEvents:
         """
         logger = logging.getLogger('Protocol')
 
+        if not data:
+            protocol.d.callback(None)
+            protocol.close_connection()
+            return
+
         remote_cg, remote_head = Prisma().graph.validate_add_event(data)
         protocol.logger.debug("sync_events_remote_cg %s", str(remote_cg))
         protocol.logger.debug("sync_events_remote_head %s", str(remote_head))
@@ -104,7 +109,7 @@ class SyncEvents:
                 logger.debug("[--->FINAL RESPONSE<---]")
         # Demo for tx pool and genesis event
         logger.debug("All NODES BALANCE: %s", str(Prisma().db.get_account_balance_many()))
-        logger.debug("STATE: %s", str(Prisma().db.get_state_many(-1, 1)))
+        logger.debug("STATE: %s", str(Prisma().db.get_last_state()))
 
         # Maybe do the next line based on some config variable in the development section?
         # SyncEvents.send_get_events(protocol)
