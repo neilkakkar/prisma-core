@@ -8,6 +8,7 @@ from pymongo import MongoClient
 
 from prisma.manager import Prisma
 from prisma.crypto.crypto import Crypto
+from prisma.cryptograph.signed_state import SignedStateManager
 
 
 class PrismaDev:
@@ -44,16 +45,15 @@ class PrismaDev:
                 if database != 'local':
                     self._destroy_db(database)
         elif sys.argv[1] == 'genesis':
+            # balance
             balances = self.read_JSON_from_file(self.genesis_balances_file)
-            # generate random wallet issuer of the genesis event
             balance = collections.OrderedDict(sorted(balances.items()))
 
-            state = {'balance': balance}
+            state = SignedStateManager(None).get_ordered_state(-1, "0" * 64, balance)
             state_hash = Crypto().blake_hash(bytes(dumps(state).encode('utf-8')))
 
             genesis = {
                 'state': state,
-                'round': -1,
                 'hash': state_hash,
                 'signed': True
             }

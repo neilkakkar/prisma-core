@@ -49,7 +49,7 @@ class TestSignedState(object):
         Test of creation of sign without data in db
         """
         with pytest.raises(ValueError):
-            signed_state_instance.get_con_sign_response()
+            signed_state_instance.create_state_sign()
 
     def test_sign_creating(self, signed_state_instance):
         """
@@ -64,14 +64,14 @@ class TestSignedState(object):
         assert signed_state_instance.graph.database.get_consensus_count() == 5
 
         # From 0 to 4
-        created_sign = signed_state_instance.get_con_sign_response()
+        created_sign = signed_state_instance.create_state_sign()
 
         # Check if generated tx is valid
         tx_dict = transaction.parse_transaction_hex(created_sign)
         assert tx_dict != False
 
         # Check if signature is valid
-        data = crypto.validate_sign_consensus(tx_dict)
+        data = crypto.validate_state_sign(tx_dict)
         assert data != False
 
         # Check main data fields
@@ -88,7 +88,7 @@ class TestSignedState(object):
         """
         signed_state_instance.graph.unsent_count = 10
 
-        assert signed_state_instance.get_con_signatures() == []
+        assert signed_state_instance.try_create_state_signatures() == []
         assert signed_state_instance.graph.unsent_count == 10
 
     def test_sign_creating_many(self, signed_state_instance):
@@ -105,7 +105,7 @@ class TestSignedState(object):
         # Check the consensus was successfully inserted
         assert signed_state_instance.graph.database.get_consensus_count() == 10
 
-        sign_list = signed_state_instance.get_con_signatures()
+        sign_list = signed_state_instance.try_create_state_signatures()
         # Check if precisely two signatures were created
         assert len(sign_list) == 2
 
@@ -115,13 +115,13 @@ class TestSignedState(object):
         """Check main data fields"""
 
         # From 0 to 5
-        data = crypto.validate_sign_consensus( transaction.parse_transaction_hex(sign_list[0]))
+        data = crypto.validate_state_sign(transaction.parse_transaction_hex(sign_list[0]))
 
         assert data['hash'] == from_0_to_4_hash
         assert data['start'] == 0
 
         # From 4 to 9
-        data = crypto.validate_sign_consensus(transaction.parse_transaction_hex(sign_list[1]))
+        data = crypto.validate_state_sign(transaction.parse_transaction_hex(sign_list[1]))
 
         assert data['hash'] == from_5_to_10_hash
         assert data['start'] == 5

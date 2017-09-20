@@ -13,8 +13,6 @@ import nacl.hash
 
 from prisma.manager import Prisma
 
-Sign_ = namedtuple('Sign_', 'signed sig_detached verify_key')
-
 
 class Common(object):
     def __init__(self):

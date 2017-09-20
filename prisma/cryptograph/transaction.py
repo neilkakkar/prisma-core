@@ -158,7 +158,7 @@ class Transaction(object):
             return Prisma().db.insert_transactions(prepared_tx_list)
         return False
 
-    def insert_processed_transaction(self, ev_hash_list, round, private_key_seed):
+    def insert_processed_transaction(self, ev_hash_list, round, self_pub_key):
         """
         Inserts processed tx (the one, that was included in final tx order) by event hash
         Should be used only in order.py
@@ -171,9 +171,8 @@ class Transaction(object):
         :type private_key_seed: str
         :return:
         """
-        self.logger.debug("insert_processed_transaction input ev_hash_list = %s, round = %s, pk = %s",
-                          str(ev_hash_list), str(round), str(private_key_seed))
-        self_verify_key = self.crypto.get_verify_key(private_key_seed)
+        self.logger.debug("insert_processed_transaction input ev_hash_list = %s, round = %s, pub_key = %s",
+                          str(ev_hash_list), str(round), str(self_pub_key))
 
         tx_list = []
         for event_hash in ev_hash_list:
@@ -186,7 +185,7 @@ class Transaction(object):
                 return False
 
             if len(event.d) > 0:
-                if event.c != self_verify_key:
+                if event.c != self_pub_key:
                     for tx_hex in event.d:
                         tx = self.parse_transaction_hex(tx_hex)
                         # Money transfer
