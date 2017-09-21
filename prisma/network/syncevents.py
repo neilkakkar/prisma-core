@@ -89,7 +89,7 @@ class SyncEvents:
             logger.debug("new remote events: %s", str(new_remote_events))
 
             if new_remote_events:
-                Prisma().state_manager.update_state()
+                Prisma().db.set_consensus_last_sent(Prisma().db.get_consensus_last_created_sign())
 
                 Prisma().graph._round.divide_rounds(new_remote_events)
                 Prisma().db.set_transaction_hash(id_list)
@@ -104,7 +104,7 @@ class SyncEvents:
                 Prisma().graph.unsent_count += len(new_c)
 
                 # Get data(list of signatures) to send to remote
-                Prisma().state_manager.get_con_signatures()
+                Prisma().state_manager.try_create_state_signatures()
 
                 logger.debug("[--->FINAL RESPONSE<---]")
         # Demo for tx pool and genesis event

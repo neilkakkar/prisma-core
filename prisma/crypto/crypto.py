@@ -35,12 +35,6 @@ class Crypto(object):
             return False
         return keypair
 
-    def get_verify_key(self, private_key):
-        keypair = nacl.signing.SigningKey(unhexlify(private_key))
-        res = (keypair.verify_key.encode(encoder=nacl.encoding.HexEncoder)).decode('utf-8')
-        self.logger.debug("Get verify key %s", str(res))
-        return res
-
     def sign_event(self, event, private_key_seed):
         """
         Signs event(s) in the hash graph.
@@ -107,7 +101,7 @@ class Crypto(object):
             return False
         return res_verify
 
-    def validate_sign_consensus(self, data):
+    def validate_state_sign(self, data):
         """
         Validates consenss signature
 

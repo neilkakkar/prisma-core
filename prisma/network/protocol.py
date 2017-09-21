@@ -69,9 +69,9 @@ class NetworkProtocol(NetstringReceiver):
                 raise Exception('Malformed payload: not a valid method.')
             # do the corresponding action
             if data['method'] == 'get_state':
-                SyncState.handle_get_state(self)
+                SyncState.handle_get_state(self, data['last_round'])
             elif data['method'] == 'get_state_response':
-                SyncState.handle_get_state_response(self, data)
+                SyncState.handle_get_state_response(self, data['states'], data['start_data'])
             elif data['method'] == 'get_peers':
                 SyncPeers.handle_get_peers(self, data['_id'], data['port'], data['latest_event'])
             elif data['method'] == 'get_peers_response':

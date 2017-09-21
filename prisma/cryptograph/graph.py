@@ -112,7 +112,8 @@ class Graph:
         """
         if not Prisma().db.get_state(-1):
             gen_state = Common().read_genesis_state()
-            Prisma().db.insert_state(gen_state['state'], gen_state['round'], gen_state['hash'], gen_state['signed'])
+            self.logger.debug("genesis_state: %s", str(gen_state))
+            Prisma().db.insert_state(gen_state['state'], gen_state['hash'], gen_state['signed'])
 
     def signed_event_response(self):
         """

@@ -1566,6 +1566,29 @@ class PrismaDB(object):
 
     # State
 
+    def get_state(self, r, exclude_hash=False):
+        """
+        Gets state by last_round
+
+        :param r: last_round for state
+        :type r: int
+        :param exclude_hash: remove hash from result or not
+        :type exclude_hash: bool
+        :return: state (balance of all wallets)
+        :rtype: dict
+        """
+        try:
+            projection = None
+            if exclude_hash:
+                projection = {'hash': False}
+
+            state = self.db.state.find_one({'_id': r}, projection)
+            self.logger.debug("Get state %s", str(state))
+            return state
+        except Exception as e:
+            self.logger.error("Could not get state for round %s. Reason: %s", r, str(e))
+        return False
+
     def get_last_state(self):
         """
         Gets the last state and round of the state.
@@ -1581,36 +1604,30 @@ class PrismaDB(object):
             self.logger.error("Could not get the last state. Reason: %s", str(e))
             return False
 
-    def get_state(self, r):
-        """
-        Gets state by last_round
-
-        :param r: last_round for state
-        :type r: int
-        :return: state (balance of all wallets)
-        :rtype: dict
-        """
-        try:
-            state = self.db.state.find_one({'_id': r})
-            self.logger.debug("Get state %s", str(state))
-            return state
-        except Exception as e:
-            self.logger.error("Could not get state for round %s. Reason: %s", r, str(e))
-        return False
-
-    def get_state_many(self, sort=False, lim=0):
+    def get_state_many(self, gt=0, signed=True, exclude_hash=True):
         """
         Gets all state stored in db
-
+        
+        :param gt: state round for greater than
+        :type gt: int
+        :param signed: get only signed or not
+        :type signed: bool
+        :param exclude_hash: remove hash from result or not
+        :type exclude_hash: bool
         :return: list of states
         :rtype: list
         """
         state = []
         try:
-            if sort:
-                db_res = self.db.state.find({}).sort('_id', sort).limit(lim)
-            else:
-                db_res = self.db.state.find({}).limit(lim)
+            query = {'_id': {'$gt': gt}}
+            if signed:
+                query['signed'] = True
+
+            projection = None
+            if exclude_hash:
+                projection = {'hash': False}
+
+            db_res = self.db.state.find(query, projection)
             if db_res:
                 for s in db_res:
                     state.append(s)
@@ -1663,14 +1680,12 @@ class PrismaDB(object):
             self.logger.error("Could not get state. Reason: %s", str(e))
         return False
 
-    def insert_state(self, state, round, hash, signed=False):
+    def insert_state(self, state, hash, signed=False):
         """
         Inserts state into db
 
         :param state: state itself
         :type state: dict
-        :param round: last round of state
-        :type round: int
         :param hash: state hash
         :type hash: str
         :param signed: is state already signed
@@ -1679,9 +1694,10 @@ class PrismaDB(object):
         :rtype: bool
         """
         try:
-            self.db.state.insert({'_id': round, 'balance': state['balance'], 'hash': hash, 'signed': signed})
-            self.logger.debug("Insert into state balance = %s, round = %s, hash = %s, signed = %s",
-                              str(state), str(round), str(hash), str(signed))
+            self.db.state.insert({'_id': state['_id'], 'prev_hash': state['prev_hash'],
+                                  'balance': state['balance'], 'hash': hash, 'signed': signed})
+            self.logger.debug("Insert into state balance = %s, hash = %s, signed = %s",
+                              str(state), str(hash), str(signed))
             return True
         except Exception as e:
             self.logger.error("Could not insert state. Reason: %s", str(e))
@@ -1724,6 +1740,35 @@ class PrismaDB(object):
         except Exception as e:
             self.logger.error("Could not delete from state. Reason: %s", str(e))
         return False
+
+    def get_state_with_proof_many(self, gt):
+        db_states = self.get_state_many(gt)
+        stateunit_list = []
+        for state in db_states:
+            signatures = {}
+            for sign in self.get_signature(state['_id'])['sign']:
+                signatures[sign['verify_key']] = sign['signed']
+
+            stateunit = {
+                'state': state,
+                'signatures': signatures
+            }
+            stateunit_list.append(stateunit)
+        return stateunit_list
+
+    def get_state_with_proof(self, r):
+        db_state = self.get_state(r, True)
+
+        signatures = {}
+        for sign in self.get_signature(r)['sign']:
+            signatures[sign['verify_key']] = sign['signed']
+
+        stateunit = {
+            'state': db_state,
+            'signatures': signatures
+        }
+
+        return stateunit
 
     # Peer
 
