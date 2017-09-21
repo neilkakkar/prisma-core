@@ -64,9 +64,8 @@ class Fame(object):
         :rtype: list
         """
         max_r = Prisma().db.get_witness_max_round()
-        max_c = Prisma().db.get_consensus_count()
+        max_c = Prisma().db.get_last_consensus()
 
-        consensus = Prisma().db.get_consensus_many()
 
         self.logger.debug("max_r %s", str(max_r))
         self.logger.debug("max_c %s", str(max_c))

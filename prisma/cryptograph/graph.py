@@ -40,10 +40,9 @@ class Graph:
         self.stake = 1
         self.tot_stake = 4  # TODO: It should change dynamically
         self.min_s = int(2 * self.tot_stake / 3 + 1) # min stake amount
-        self.to_sign_count = 5
+        self.to_sign_count = 10
         self.last_signed_state = 0
         self.unsent_count = 0
-        self.genesis_event = Common().read_genesis_event()
         self._cgc = CryptographCommon(graph=self)
         self.common = Common()
         self.crypto = Crypto()
@@ -55,8 +54,15 @@ class Graph:
         self._order = Order(graph=self)
         self._round = Rounds(graph=self)
 
+    def init_graph(self):
         self.last_signed_state = Prisma().db.get_consensus_last_signed()
         self.logger.debug("INIT last_signed_state: %s", str(self.last_signed_state))
+
+        is_cg_empty = self.init_events()
+        self.restore_invariants(is_cg_empty)
+
+        if is_cg_empty:
+            self.sync_genesis()
 
         self.unsent_count = len(Prisma().db.get_consensus_greater_than(
             Prisma().db.get_consensus_last_created_sign()))
@@ -102,33 +108,12 @@ class Graph:
 
     def sync_genesis(self):
         """
-        NOTE: this func is a clone of handle_get_events_response
-        Later we should drop it and use handle_get_events_response instead
+        Insert genesis state if it is not exist
         """
-        remote_cg = self.get_clean_remote_cg(self.genesis_event)
-        remote_head = list(remote_cg.keys())[0]
-
-        if remote_cg and remote_head in remote_cg:
-            id_list, transaction_list = Prisma().db.get_unsent_transactions_many(
-                self.keystore['address'])
-
-            # Pass signatures as payload argument to new event
-            new_remote_events = self.insert_new_events(remote_cg, remote_head, transaction_list)
-            self.logger.debug("new remote events: %s", str(new_remote_events))
-
-            if new_remote_events:
-                Prisma().state_manager.update_state()
-
-                self._round.divide_rounds(new_remote_events)
-                Prisma().db.set_transaction_hash(id_list)
-
-                new_c = self._fame.decide_fame()
-
-                # Control unsent signatures count
-                self.logger.debug("new_c %s", str(new_c))
-                self.unsent_count += len(new_c)
-
-                self._order.find_order(new_c)
+        if not Prisma().db.get_state(-1):
+            gen_state = Common().read_genesis_state()
+            self.logger.debug("genesis_state: %s", str(gen_state))
+            Prisma().db.insert_state(gen_state['state'], gen_state['hash'], gen_state['signed'])
 
     def signed_event_response(self):
         """
@@ -254,7 +239,7 @@ class Graph:
         if head:
             cs = json.loads((self.crypto.verify_event(signed_event_response)).decode('utf-8'))
             # cs are a dict
-            subset = {h: Prisma().db.get_event(h, clear_parent=True)
+            subset = {h: Prisma().db.get_event(h)
                       for h in self._cgc.bfs((head,),
                                                    lambda u: (p for p in
                                                               Prisma().db.get_event(u, clear_parent=True).p

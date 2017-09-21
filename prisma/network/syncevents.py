@@ -71,6 +71,11 @@ class SyncEvents:
         """
         logger = logging.getLogger('Protocol')
 
+        if not data:
+            protocol.d.callback(None)
+            protocol.close_connection()
+            return
+
         remote_cg, remote_head = Prisma().graph.validate_add_event(data)
         protocol.logger.debug("sync_events_remote_cg %s", str(remote_cg))
         protocol.logger.debug("sync_events_remote_head %s", str(remote_head))
@@ -84,7 +89,7 @@ class SyncEvents:
             logger.debug("new remote events: %s", str(new_remote_events))
 
             if new_remote_events:
-                Prisma().state_manager.update_state()
+                Prisma().db.set_consensus_last_sent(Prisma().db.get_consensus_last_created_sign())
 
                 Prisma().graph._round.divide_rounds(new_remote_events)
                 Prisma().db.set_transaction_hash(id_list)
@@ -99,12 +104,12 @@ class SyncEvents:
                 Prisma().graph.unsent_count += len(new_c)
 
                 # Get data(list of signatures) to send to remote
-                Prisma().state_manager.get_con_signatures()
+                Prisma().state_manager.try_create_state_signatures()
 
                 logger.debug("[--->FINAL RESPONSE<---]")
         # Demo for tx pool and genesis event
         logger.debug("All NODES BALANCE: %s", str(Prisma().db.get_account_balance_many()))
-        logger.debug("STATE: %s", str(Prisma().db.get_state_many(-1, 1)))
+        logger.debug("STATE: %s", str(Prisma().db.get_last_state()))
 
         # Maybe do the next line based on some config variable in the development section?
         # SyncEvents.send_get_events(protocol)

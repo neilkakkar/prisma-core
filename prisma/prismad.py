@@ -10,10 +10,27 @@ import argparse
 import signal
 from twisted.python import log
 from twisted.internet import reactor
+from packaging import version
+import urllib.request
 
-from prisma.manager import Prisma
+from prisma.manager import Prisma, __version__
 from prisma.config import CONFIG
 from prisma.crypto.wallet import Wallet
+
+PKGINFO_URL = 'https://pypi.python.org/pypi?name=prisma&:action=display_pkginfo'
+
+
+def retrieve_last_version():
+    """
+    Get the last version of prisma package from pypi.
+
+    :return: the version, none otherwise
+    """
+    pkginfo = urllib.request.urlopen(PKGINFO_URL).read()
+    pkginfo = pkginfo.decode().splitlines()
+    for line in pkginfo:
+        if line.startswith('Version: '):
+            return line[len('Version: '):]
 
 
 def main():
@@ -29,9 +46,22 @@ def main():
     parser.add_argument('--database', help='mongodb database name')
     parser.add_argument('--prompt', '-p', action='store_true', help='show prompt')
     parser.add_argument('--log', '-l', help='log into a file')
+    parser.add_argument('--version', action='store_true', help='print version')
     parser.add_argument('-v', action='store_true', help='verbose')
     parser.add_argument('-vv', action='store_true', help='very verbose')
     args = parser.parse_args()
+
+    if args.version:
+        print('Prisma v{0}'.format(__version__))
+        exit(0)
+
+    # check version and ask for updating in case that is not updated.
+    last_version = retrieve_last_version()
+    if last_version and version.parse(last_version) > version.parse(__version__):
+        print('A newer version of Prisma is available ({0}), please update Prisma with pip3.'.format(last_version))
+        choice = input('Do you wish to continue anyway? (y/N): ').strip().lower()
+        if choice != 'y':
+            exit()
 
     wallet = Wallet()
 

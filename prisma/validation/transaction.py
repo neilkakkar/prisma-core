@@ -88,7 +88,7 @@ class TxValidator(object):
             return True
         self.logger.error("Invalid transaction type.")
         return False
-
+      
     @staticmethod
     def is_hex(hex_string):
         try:

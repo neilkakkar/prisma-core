@@ -108,9 +108,9 @@ class ApiMethods:
         :param to_address: address
         :param amount: int
         """
-        transaction = Prisma().wallet.transaction.form_transaction(Prisma().graph.keystore, to_address, amount)
+        transaction = Prisma().wallet.transaction.form_funds_tx(Prisma().graph.keystore, to_address, amount)
         Prisma().wallet.transaction.insert_transactions_into_pool([transaction])
-        return {'transaction': Prisma().wallet.transaction.unhexify_transaction(transaction)}
+        return {'transaction': Prisma().wallet.transaction.unhexlify_transaction(transaction)}
 
     @staticmethod
     def create_transaction(to_address, amount, from_address=None, password=None):
@@ -132,9 +132,9 @@ class ApiMethods:
             raise Exception('It\'s not possible to send from another wallet different than the main wallet atm. Sorry!')
         else:
             keystore = Prisma().graph.keystore
-        transaction = Prisma().wallet.transaction.form_transaction(keystore, to_address, amount)
+        transaction = Prisma().wallet.transaction.form_funds_tx(keystore, to_address, amount)
         Prisma().wallet.transaction_buffer_add(transaction)
-        return {'transaction_stored': Prisma().wallet.transaction.unhexify_transaction(transaction)}
+        return {'transaction_stored': Prisma().wallet.transaction.unhexlify_transaction(transaction)}
 
     @staticmethod
     def clear_transactions():
@@ -156,7 +156,7 @@ class ApiMethods:
         if len(Prisma().wallet.transaction_buffer) == 0:
             return {'message': 'The buffer is empty.'}
         for transaction in Prisma().wallet.transaction_buffer:
-            data[i] = Prisma().wallet.transaction.unhexify_transaction(transaction)
+            data[i] = Prisma().wallet.transaction.unhexlify_transaction(transaction)
             i += 1
         return data
 

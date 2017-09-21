@@ -24,45 +24,86 @@ class SyncState:
         :param protocol:
         """
         request_data = {
-            'method': 'get_state'
+            'method': 'get_state',
+            'last_round': Prisma().db.get_last_state()['_id']
         }
         protocol.send_data(request_data)
 
     @staticmethod
-    def handle_get_state(protocol):
+    def handle_get_state(protocol, last_round):
         """
         Send our state
+        
+        :param last_round: last round of state that remote have
+        :type last_round: int
         """
-        state = Prisma().db.get_last_state()
-        # add peer to database
-        response_data = {
-            'method': 'get_state_response',
-            'state': state
-        }
+        local_round = Prisma().db.get_last_state()['_id']
+        if local_round > last_round:
+            # Get data for new node start from db
+            rounds = Prisma().db.get_rounds_many(local_round)
+            witnesses = {local_round: Prisma().db.get_witness(local_round),
+                         local_round-1: Prisma().db.get_witness(local_round-1)}
+            height = Prisma().db.get_heights_many()
+
+            # Format response dict
+            response_data = {
+                'method': 'get_state_response',
+                'states':  Prisma().db.get_state_with_proof_many(last_round),
+                'start_data': {
+                    'rounds': rounds,
+                    'witnesses': witnesses,
+                    'heights': height
+                }
+            }
+        else:
+            # Nothing to send
+            response_data = {
+                'method': 'get_state_response',
+                'states': None,
+                'start_data': None
+            }
         protocol.send_data(response_data)
 
     @staticmethod
-    def handle_get_state_response(protocol, state):
+    def handle_get_state_response(protocol, states, start_data):
         """
         Add state from the response to the database. Then close connection.
 
         :param protocol:
-        :param state:
+        :param data:
         """
+        protocol.logger.debug("sync_state states = %s, start_data = %s", str(states), str(start_data))
         # state is empty, we are before the first state creation!
-        if state is False:
+        if not states:
             protocol.d.callback(None)
             protocol.close_connection()
             return
 
-        # TODO the hash will have to be corroborated with 1/3 (half of the 2/3)
-        wallets = collections.OrderedDict(sorted(state['wallets'].items()))
-        h = Prisma().crypto.blake_hash(bytes(json.dumps(wallets).encode('utf-8')))
-        if h != state['hash']:
-            protocol.d.errback(Exception('State does not generate the same hash as the one received!'))
+        # Check if last of received states has last round greater than local one
+        last_state_id = Prisma().db.get_last_state()['_id']
+        if last_state_id < states[-1]['state']['_id']:
+            state_handle_res = Prisma().state_manager.handle_received_state_chain(states)
 
-        # add to the database
-        Prisma().db.insert_state(state['wallets'], state['_id'], state['hash'])
+            # If successfuly validate received states insert start_data and start working
+            if state_handle_res:
+                # After handling received states at least one state should be inserted
+                last_state_id = Prisma().db.get_last_state()['_id']
+
+                # Clear db
+                Prisma().db.drop_collections_many(['events', 'height', 'rounds', 'head', 'state', 'signature'])
+                Prisma().db.delete_round_greater_than(last_state_id)
+
+                # Insert start data and set some initial values
+                Prisma().db.insert_round(start_data['rounds'])
+                Prisma().db.insert_height(start_data['heights'])
+                Prisma().db.insert_consensus([last_state_id], True)
+                Prisma().db.set_consensus_last_sent(last_state_id)
+                Prisma().graph.last_signed_state = last_state_id
+                Prisma().graph.unsent_count = 0
+                Prisma().db.insert_witness(start_data['witnesses'])
+            else:
+                protocol.logger.error("Could not validate recived states, states = %s", str(states))
+                # TODO everything is NOT ok what shall we do ?
 
         # everything ok, so do the callback and close connection
         protocol.d.callback(None)

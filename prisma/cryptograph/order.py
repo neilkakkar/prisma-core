@@ -98,4 +98,4 @@ class Order(object):
             self.logger.debug("Final: %s", str(final))
 
             self.logger.debug("Before inserting new_c %s", str(new_c))
-            self.transaction.insert_processed_transaction(final, r, self.graph.keystore['privateKeySeed'])
+            self.transaction.insert_processed_transaction(final, r, self.graph.keystore['publicKey'])

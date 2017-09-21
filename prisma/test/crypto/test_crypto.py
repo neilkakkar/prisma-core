@@ -19,10 +19,3 @@ class PrismaCryptoCryptoTestCase(PrismaTestCase):
         self.assertTrue(len(sk_curve25519) == 64)
         self.assertTrue(len(pk) == 64)
         self.assertTrue(len(pk_curve25519) == 64)
-
-    def test_get_verify_key(self):
-        pk = self.prisma.wallet.crypto.get_verify_key(self.SK)
-        pk = pk.encode('utf-8')
-        self.assertTrue(pk == self.PK)
-        address = self.prisma.wallet.addr_from_public_key(self.PK)
-        self.assertTrue(address == self.PK_ADDRESS)

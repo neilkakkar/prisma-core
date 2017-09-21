@@ -13,6 +13,7 @@ from binascii import hexlify, unhexlify
 from prisma.manager import Prisma
 from prisma.utils.common import Common
 from prisma.crypto.crypto import Crypto
+from prisma.validation.transaction import TxValidator
 
 TYPE_MONEY_TRANSFER = 0
 TYPE_SIGNED_STATE = 1
@@ -25,49 +26,39 @@ class Transaction(object):
     def __init__(self):
         self.common_functions = Common()
         self.crypto = Crypto()
+        self.validator = TxValidator()
         self.logger = logging.getLogger('Transaction')
-        self.genesis_event_hash = self.get_genesis_event_hash()
-        self.logger.debug("genesis_event_hash %s", str(self.genesis_event_hash))
 
-    def get_genesis_event_hash(self):
-        genesis_event = self.common_functions.read_genesis_event()
-        if not genesis_event:
-            sys.exit(1)
-        return list(genesis_event.keys())[0]
-
-    def hexify_transaction(self, tx):
+    def hexlify_transaction(self, tx):
         """
         Hexifies a transaction.
 
         :param tx:
         :return: Success:
-        :return: False: Failed to hexify tx
+        :return: False: Failed to hexlify tx
         :rtype: string or bool
         """
         try:
-            res = (hexlify(bytes(json.dumps(tx).encode('utf-8')))).decode('utf-8')
-            return res
+            return hexlify(bytes(json.dumps(tx).encode('utf-8'))).decode('utf-8')
         except Exception as e:
-            self.logger.error("Failed to hexify tx, error %s", str(e))
-            return False
+            self.logger.error("Failed to hexlify transaction. Reason: {0}".format(e))
+        return False
 
-    def unhexify_transaction(self, tx):
+    @staticmethod
+    def unhexlify_transaction(tx_hex):
         """
-        Un-Hexifys a transaction
+        From a tx_hex returns the original dictionary.
 
-        :param tx:
-        :return: Success:
-        :return: False: Could not parse transaction
-        :rtype: string or bool
+        :param tx_hex:
+        :return: dict
         """
         try:
-            res = json.loads(unhexlify(tx).decode('utf-8'))
-            return res
+            return json.loads(unhexlify(tx_hex).decode('utf-8'))
         except Exception as e:
-            self.logger.error("Could not parse transaction. Reason: %s", str(e))
-            return False
+            self.logger.error("Failed to unhexlify transaction. Reason: {0}".format(e))
+        return False
 
-    def form_transaction(self, keys, recipient_id, amount):
+    def form_funds_tx(self, keys, recipient_id, amount):
         """
         Wraps a transaction in an object.
 
@@ -76,35 +67,25 @@ class Transaction(object):
         :param amount:
         :return: self.finalize_transaction():
         """
-        transaction = {"type": str(TYPE_MONEY_TRANSFER),
-                       "amount": amount,
-                       "senderPublicKey": keys['publicKey'].decode(),
-                       "senderId": keys['address'],
-                       "recipientId": recipient_id,
-                       "timestamp": self.common_functions.get_timestamp()}
-        return self.finalize_transaction(transaction, keys)
+        if amount and keys and 'address' in keys and \
+                'publicKey' in keys and recipient_id:
 
-    def sign_transaction(self, private_key, tx_hex):
-        """
-        Signs a transaction with private key
+            tx = {
+                "type": str(TYPE_MONEY_TRANSFER),
+                "amount": amount,
+                "senderPublicKey": keys['publicKey'].decode(),
+                "senderId": keys['address'],
+                "recipientId": recipient_id,
+                "timestamp": self.common_functions.get_timestamp()
+            }
+        else:
+            self.logger.error("Missing values in form transaction.")
+            return False
 
-        :param private_key:
-        :param tx_hex:
-        :return: self.crypto.sign_tx()
-        """
-        return self.crypto.sign_tx(private_key, self.crypto.sha256_tx(tx_hex))
+        if not self.validator.transaction(tx):
+            return False
 
-    def verify_transaction(self, tx_hex, tx_signature, tx_verify_key):
-        """
-        Verifies transaction.
-
-        :param tx_hex:
-        :param tx_signature:
-        :param tx_verify_key:
-        :return: self.crypto.verify_tx()
-        """
-        # TODO tx_signature, tx_verify_key are unexpected arguments
-        return self.crypto.verify_tx(self.crypto.sha256_tx(tx_hex), tx_signature, tx_verify_key)
+        return self.hexlify_transaction(tx)
 
     def generate_transaction_id(self, tx_hex):
         """
@@ -134,71 +115,23 @@ class Transaction(object):
         """
         return 10
 
-    def finalize_transaction(self, transaction, keys):
-        """
-        Finalizes transaction.
-
-        :param transaction
-        :param keys
-        :return: Success: hex_str:
-        :rtype: string, hex converted
-        :return: False: Failed to sign transaction !
-        :rtype: empty string
-        """
-        tx_hex = hexlify((json.dumps(transaction)).encode('utf-8'))
-        signed_tx = self.sign_transaction(keys['privateKeySeed'], tx_hex)
-
-        if not signed_tx:
-            self.logger.error("Failed to sign transaction !")
-            return ""
-
-        final = {
-            'tx_hex': tx_hex.decode('utf-8'),
-            'tx_signature': signed_tx['sig_detached'].decode('utf-8'),
-            'tx_verify_key': signed_tx['verify_key'].decode('utf-8')
-        }
-        hex_str = self.hexify_transaction(final)
-
-        return hex_str
-
-    def parse_transaction_hex(self, hex_str, ev_hash =""):
+    def parse_transaction_hex(self, tx_hex):
         """
         Parse hex to a transaction dict.
 
-        :param hex_str:
-        :param ev_hash:
-        :return: Success: transaction_dict:
-        :return: False: Sender doesn't have enough money ! ( error logger )
-        :return: Success: unhex_tx_final:
-        :return: False: Could not parse transaction ! ( error logger )
-        :rtype: bool
+        :param tx_hex:
+        :return: tx
         """
-        unhex_tx_final = self.unhexify_transaction(hex_str)
-        self.logger.debug("unhex_tx_final %s", str(unhex_tx_final))
-
-        if unhex_tx_final:
-            if 'tx_hex' in unhex_tx_final and 'tx_signature' in unhex_tx_final and 'tx_verify_key' in unhex_tx_final:
-                verify_result = self.crypto.verify_tx(unhex_tx_final)
-                self.logger.debug("verify_result %s", str(verify_result))
-
-                if verify_result and 'tx_hex' in unhex_tx_final:
-                    transaction_dict = json.loads(unhexlify(unhex_tx_final['tx_hex']).decode('utf-8'))
-                    self.logger.debug("tx_parse_dict %s", str(transaction_dict))
-                    self.logger.debug("tx_parse_ev_hash %s", str(ev_hash))
-                    # TODO: validate dict fields before
-                    if (int(transaction_dict['type']) == TYPE_MONEY_TRANSFER and
-                        (transaction_dict['amount'] <= Prisma().db.get_account_balance(transaction_dict['senderId'])
-                         or ev_hash == self.genesis_event_hash)):
-                        return transaction_dict
-                    else:
-                        self.logger.error("Sender %s doesn't have enough money!", transaction_dict['senderId'])
-            elif ('signed' in unhex_tx_final and 'sig_detached' in unhex_tx_final
-                  and 'verify_key' in unhex_tx_final and 'type' in unhex_tx_final
-                  and int(unhex_tx_final['type'])):
-                return unhex_tx_final
-
-        self.logger.error("Could not parse transaction! %s", Prisma().common.get_mini_hash(hex_str))
-        return False  # Not valid tx
+        try:
+            tx = self.unhexlify_transaction(tx_hex)
+            if int(tx['type']) == TYPE_MONEY_TRANSFER:
+                sender_balance = Prisma().db.get_account_balance(tx['senderId'])
+                if tx['amount'] > sender_balance:
+                    raise Exception('Money transfer without enough balance.')
+            return tx
+        except Exception as e:
+            self.logger.debug('Could not parse transaction: ' + str(e))
+        return False
 
     def insert_transactions_into_pool(self, tx_list):
         """
@@ -211,19 +144,21 @@ class Transaction(object):
         :return: insertion result
         :rtype: bool
         """
-        prepared_tx_list = []
-        for tx_hex in tx_list:
-            tx = self.parse_transaction_hex(tx_hex)
-            if tx:
-                tx['tx_dict_hex'] = tx_hex
-                self.logger.debug("Prepared for pool tx %s", str(tx))
-                prepared_tx_list.append(tx)
-            else:
-                self.logger.error("Skipping inserting malformed transaction %s", str(tx))
-                continue
-        return Prisma().db.insert_transactions(prepared_tx_list)
+        if tx_list:
+            prepared_tx_list = []
+            for tx_hex in tx_list:
+                tx = self.parse_transaction_hex(tx_hex)
+                if tx:
+                    tx['tx_dict_hex'] = tx_hex
+                    self.logger.debug("Prepared for pool tx %s", str(tx))
+                    prepared_tx_list.append(tx)
+                else:
+                    self.logger.error("Skipping inserting malformed transaction %s", str(tx))
+                    continue
+            return Prisma().db.insert_transactions(prepared_tx_list)
+        return False
 
-    def insert_processed_transaction(self, ev_hash_list, round, private_key_seed):
+    def insert_processed_transaction(self, ev_hash_list, round, self_pub_key):
         """
         Inserts processed tx (the one, that was included in final tx order) by event hash
         Should be used only in order.py
@@ -236,24 +171,23 @@ class Transaction(object):
         :type private_key_seed: str
         :return:
         """
-        self.logger.debug("insert_processed_transaction input ev_hash_list = %s, round = %s, pk = %s", str(ev_hash_list),
-                          str(round), str(private_key_seed))
-        self_verify_key = self.crypto.get_verify_key(private_key_seed)
+        self.logger.debug("insert_processed_transaction input ev_hash_list = %s, round = %s, pub_key = %s",
+                          str(ev_hash_list), str(round), str(self_pub_key))
 
         tx_list = []
         for event_hash in ev_hash_list:
             self.logger.debug("insert_processed_transaction for ev with hash %s", str(event_hash))
             event = Prisma().db.get_event(event_hash)
+            Prisma().db.set_round_handled({event_hash: round})
             self.logger.debug("insert_transaction_by_ev_hash event %s", str(event))
-            if not len(event):
+            if not event:
                 self.logger.error("Could not insert tx, event there is no event !")
                 return False
 
             if len(event.d) > 0:
-                if event.c != self_verify_key:
+                if event.c != self_pub_key:
                     for tx_hex in event.d:
-                        tx = self.parse_transaction_hex(tx_hex, event_hash)
-
+                        tx = self.parse_transaction_hex(tx_hex)
                         # Money transfer
                         if (tx and 'type' in tx and int(tx['type']) == TYPE_MONEY_TRANSFER and
                                 'amount' in tx and 'senderId' in tx and 'recipientId' in tx):
@@ -262,13 +196,11 @@ class Transaction(object):
                             tx['round'] = round
                             tx_list.append(tx)
                             self.logger.debug("Insert money transfer tx %s", str(tx))
-
                         # State signature
-                        elif tx and int(tx['type']) == TYPE_SIGNED_STATE:
+                        elif tx and 'type' in tx and int(tx['type']) == TYPE_SIGNED_STATE:
                             # Handle new signatures that was crated by remote node
                             self.logger.debug("Handle remote sign %s", str(tx))
                             Prisma().state_manager.handle_new_sign(tx)
-
                         # Error
                         else:
                             self.logger.error("Skipping malformed transaction data for event hash: %s", str(tx))

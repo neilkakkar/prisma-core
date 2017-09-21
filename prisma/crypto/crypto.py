@@ -35,12 +35,6 @@ class Crypto(object):
             return False
         return keypair
 
-    def get_verify_key(self, private_key):
-        keypair = nacl.signing.SigningKey(unhexlify(private_key))
-        res = (keypair.verify_key.encode(encoder=nacl.encoding.HexEncoder)).decode('utf-8')
-        self.logger.debug("Get verify key %s", str(res))
-        return res
-
     def sign_event(self, event, private_key_seed):
         """
         Signs event(s) in the hash graph.
@@ -97,7 +91,6 @@ class Crypto(object):
         :return: False: Unsuccessfully verified Event.
         """
         event = unhexlify(ev['signed'].encode('utf-8'))
-        event_signature = unhexlify(ev['sig_detached'].encode('utf-8'))
         verify_key_hex = ev['verify_key'].encode('utf-8')
 
         try:
@@ -108,14 +101,12 @@ class Crypto(object):
             return False
         return res_verify
 
-    def validate_sign_consensus(self, data):
+    def validate_state_sign(self, data):
         """
         Validates consenss signature
 
         :param data: consensus signature
         :type data: dict
-        :param to_sign_count: predefined size of sign paceges
-        :type to_sign_count: int
         :return: decrypted data and signature itself or False if error
         :rtype: dict or bool
         """
@@ -150,30 +141,6 @@ class Crypto(object):
             return False
         return {'sig_detached': hexlify(signed_tx.signature),
                 'verify_key': keypair.verify_key.encode(encoder=nacl.encoding.HexEncoder)}
-
-    def verify_tx(self, transaction):
-        """
-        Verify a transaction within an event.
-
-        :param transaction:
-                    tx_hash: json serialized transaction dictionary.
-                    tx_signature: hex string of the detached signature of a signed transaction.
-                    tx_public_key: the public key of the one who signed the transaction.
-        :type transaction: dict
-        :return: False: could not sign the transaction.
-        :return: True: validated successfully.
-        :rtype: bool
-        """
-        tx_ver_key = transaction['tx_verify_key'].encode('utf-8')
-        tx_hex = transaction['tx_hex'].encode('utf-8')
-        tx_sign = unhexlify(transaction['tx_signature'].encode('utf-8'))
-        try:
-            verify_key = nacl.signing.VerifyKey(tx_ver_key, encoder=nacl.encoding.HexEncoder)
-            verify_key.verify(self.sha256_tx(tx_hex), tx_sign)  # throws an exception if not verified
-        except Exception as e:
-            self.logger.error("Could not verify data. Reason:", e)
-            return False
-        return True
 
     def blake_hash(self, byte_string):
         """

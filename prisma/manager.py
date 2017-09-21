@@ -50,7 +50,6 @@ class PrismaManager:
         """
         Start the app.
 
-        :param database:
         :param is_prompt:
         :return:
         """
@@ -62,12 +61,8 @@ class PrismaManager:
             self.crypto = Crypto()
 
             self.graph = Graph()
+            self.graph.init_graph()
             self.state_manager = SignedStateManager(self.graph)
-            is_cg_empty = self.graph.init_events()
-            self.graph.restore_invariants(is_cg_empty)
-
-            if is_cg_empty:
-                self.graph.sync_genesis()
 
             self.api = ApiService()
             self.network = NetworkService()

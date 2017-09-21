@@ -5,6 +5,7 @@ pygments==2.2.0
 pymongo==3.4.0
 pynacl==1.1.2
 twisted==17.1.0
+packaging==16.8
 
 pytest-mongodb==2.1.1
 sphinx

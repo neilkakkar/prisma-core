@@ -47,7 +47,7 @@ class PrismaNetworkProtocolTestCase(NetworkTestCase):
     def test_handle_get_state_empty(self):
         # send the request
         send = self._prepare_sending('{"method": "get_state"}')
-        send = self._test_netstring(send)
+        send = self._receive_netstring(send)
         # receive the request
         self.protocol.stringReceived(send)
         received = self.transport.value()
@@ -59,7 +59,7 @@ class PrismaNetworkProtocolTestCase(NetworkTestCase):
         self._add_example_states()
         # send the request
         send = self._prepare_sending('{"method": "get_state"}')
-        send = self._test_netstring(send)
+        send = self._receive_netstring(send)
         # receive the request
         self.protocol.stringReceived(send)
         received = self.transport.value()
@@ -91,7 +91,7 @@ class PrismaNetworkProtocolTestCase(NetworkTestCase):
             }
         })
         send = self._prepare_sending(send)
-        send = self._test_netstring(send)
+        send = self._receive_netstring(send)
         # receive the request and check if successful
         self.protocol.stringReceived(send)
         last_state = self.prisma.db.get_last_state()

@@ -3,6 +3,7 @@ from prisma import __version__
 
 setup(
     name='prisma',
+    description='The first open source cryptocurrency using the hashgraph consensus algorithm',
     packages=find_packages(),
     version=__version__,
     install_requires=[
@@ -13,6 +14,7 @@ setup(
         'pymongo==3.4.0',
         'pynacl==1.1.2',
         'twisted==17.1.0',
+        'packaging==16.8'
     ],
     classifiers=[
         "Programming Language :: Python :: 3.5"
