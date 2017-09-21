@@ -69,14 +69,10 @@ class TxValidator(object):
         :rtype: bool
         """
 
-        if len(public_key) == 64:
-            try:
-                int(public_key, 16)
-                return True
-            except Exception as e:
-                self.logger.error("Invalid public key. Reason: {0}".format(e))
-        self.logger.error("Invalid public key.")
-        return False
+        if len(public_key) != 64 or not self.is_hex(public_key):
+            self.logger.error("Invalid public key.")
+            return False
+        return True
 
     def tx_type(self, _type):
         """
@@ -91,4 +87,13 @@ class TxValidator(object):
         if isinstance(_type, str) and int(_type) == TYPE_MONEY_TRANSFER or int(_type) == TYPE_SIGNED_STATE:
             return True
         self.logger.error("Invalid transaction type.")
+        return False
+      
+    @staticmethod
+    def is_hex(hex_string):
+        try:
+            int(hex_string, 16)
+            return True
+        except ValueError:
+            pass
         return False
