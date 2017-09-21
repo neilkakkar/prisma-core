@@ -34,18 +34,18 @@ class SyncState:
         """
         Send our state
         
-        :param last_round: last round of state that remote have
+        :param last_round: last round of state that remote has
         :type last_round: int
         """
         local_round = Prisma().db.get_last_state()['_id']
         if local_round > last_round:
-            # Get data for new node start from db
+            # Gets data for new node start from db
             rounds = Prisma().db.get_rounds_many(local_round)
             witnesses = {local_round: Prisma().db.get_witness(local_round),
                          local_round-1: Prisma().db.get_witness(local_round-1)}
             height = Prisma().db.get_heights_many()
 
-            # Format response dict
+            # Formats response dict
             response_data = {
                 'method': 'get_state_response',
                 'states':  Prisma().db.get_state_with_proof_many(last_round),
@@ -67,7 +67,7 @@ class SyncState:
     @staticmethod
     def handle_get_state_response(protocol, states, start_data):
         """
-        Add state from the response to the database. Then close connection.
+        Adds state from the response to the database. Then closes connection.
 
         :param protocol:
         :param data:
@@ -79,12 +79,12 @@ class SyncState:
             protocol.close_connection()
             return
 
-        # Check if last of received states has last round greater than local one
+        # Checks if last of received states has last round greater than local one
         last_state_id = Prisma().db.get_last_state()['_id']
         if last_state_id < states[-1]['state']['_id']:
             state_handle_res = Prisma().state_manager.handle_received_state_chain(states)
 
-            # If successfuly validate received states insert start_data and start working
+            # If received states are successfuly validated, then inserts start_data and starts working
             if state_handle_res:
                 # After handling received states at least one state should be inserted
                 last_state_id = Prisma().db.get_last_state()['_id']
@@ -93,7 +93,7 @@ class SyncState:
                 Prisma().db.drop_collections_many(['events', 'height', 'rounds', 'head', 'state', 'signature'])
                 Prisma().db.delete_round_greater_than(last_state_id)
 
-                # Insert start data and set some initial values
+                # Inserts start data and sets some initial values
                 Prisma().db.insert_round(start_data['rounds'])
                 Prisma().db.insert_height(start_data['heights'])
                 Prisma().db.insert_consensus([last_state_id], True)

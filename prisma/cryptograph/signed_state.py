@@ -33,7 +33,7 @@ class SignedStateManager(object):
         self.logger = logging.getLogger('SignedStateManager')
 
     def get_ordered_state(self, last_round, prev_hash, balance):
-        """ Get ordered dict of state
+        """ Gets ordered dict of state
         
         :param last_round: last round of state
         :type last_round: int 
@@ -60,10 +60,10 @@ class SignedStateManager(object):
         :return: hash of newly created state
         :rtype: str
         """
-        # Get Prev_hash
+        # Gets Prev_hash
         prev_hash = Prisma().db.get_last_state()['hash']
 
-        # Get and sort Balance
+        # Gets and sort Balance
         balance_dict = Prisma().db.get_account_balance_many(
             [start_round, last_round])
         balance = collections.OrderedDict(sorted(balance_dict.items()))
@@ -71,7 +71,7 @@ class SignedStateManager(object):
         state = self.get_ordered_state(last_round, prev_hash, balance)
         state_hash = self.crypto.blake_hash(bytes(dumps(state).encode('utf-8')))
 
-        # Result of all old transactions saved in newly created state, so we can drop tx
+        # Result of all old transactions is saved in newly created state, so we can drop tx
         Prisma().db.delete_money_transfer_transaction_less_than(last_round)
         Prisma().db.insert_state(state, state_hash)
         return state_hash
@@ -274,7 +274,7 @@ class SignedStateManager(object):
         Prisma().db.delete_references_can_see(hash_list)
 
     def handle_received_state(self, state, signatures):
-        """ Validate state received due connecting
+        """ Validates state received via connection
         
         :param state: state to validate
         :type state: dict
@@ -294,11 +294,11 @@ class SignedStateManager(object):
 
         state_hash = self.crypto.blake_hash(bytes(dumps(ordered_state).encode('utf-8')))
 
-        # TODO improve signingature storing and validation
+        # TODO improve signature storing and validation
         signature_list = []
         proof_sign_count = 0
         for verify_key in signatures:
-            # Verify signed data
+            # Verifies signed data
             temp_dict = {'verify_key': verify_key, 'signed': signatures[verify_key]}
             sign_data = self.crypto.validate_state_sign(temp_dict)
 
@@ -319,7 +319,7 @@ class SignedStateManager(object):
             else:
                 self.logger.error("Recived state have bad signature")
 
-        # Check if we get enough signatures
+        # Checks if we get enough signatures
         if proof_sign_count >= self.graph.min_s:
             Prisma().db.insert_state(state, state_hash, True)
             for sign in signature_list:
