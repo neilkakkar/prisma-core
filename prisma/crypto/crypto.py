@@ -113,13 +113,13 @@ class Crypto(object):
         if data:
             try:
                 if data and 'signed' in data:
-                    remote_consensus = loads(self.verify_event(data).decode('utf-8'))
-                    self.logger.debug("remote_consensus %s", str(remote_consensus))
-                    if remote_consensus:
-                        remote_consensus['sign'] = data
-                        return remote_consensus
+                    state_sign_data = loads(self.verify_event(data).decode('utf-8'))
+                    self.logger.debug("state_sign_data %s", str(state_sign_data))
+                    if state_sign_data:
+                        state_sign_data['sign'] = data
+                        return state_sign_data
             except Exception as e:
-                self.logger.error("Failed to validate consensus sign msg: %s", str(e))
+                self.logger.error("Failed to validate state sign msg: %s", str(e))
         # it is not a signature or could not validate signatureGs
         return False
 

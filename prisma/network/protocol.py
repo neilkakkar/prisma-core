@@ -8,6 +8,7 @@ Licensed under the GNU Lesser General Public License, version 3 or later. See LI
 import logging
 import json
 import zlib
+from collections import OrderedDict
 from twisted.internet.protocol import Factory
 from twisted.protocols.basic import NetstringReceiver
 
@@ -58,7 +59,7 @@ class NetworkProtocol(NetstringReceiver):
             # decompress and convert payload json to object
             data = zlib.decompress(payload)
             self.logger.debug('Received from {0}:{1}: {2}'.format(self.peer.host, str(self.peer.port), data))
-            data = json.loads(data.decode())
+            data = json.loads(data.decode(), object_pairs_hook=OrderedDict)
         except Exception as e:
             self.d.errback(Exception('Error: Data received from peer not parsed: {0}'.format(e)))
             return False

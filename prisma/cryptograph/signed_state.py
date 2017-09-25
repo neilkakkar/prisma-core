@@ -288,11 +288,12 @@ class SignedStateManager(object):
             self.logger.error("Recived state have bad hash of prev state")
             return False
 
-        balance = collections.OrderedDict(sorted(state['balance'].items()))
+        '''balance = collections.OrderedDict(sorted(state['balance'].items()))
         ordered_state = self.get_ordered_state(state['_id'], state['prev_hash'], balance)
         self.logger.debug("ordered_state: %s", str(ordered_state))
 
-        state_hash = self.crypto.blake_hash(bytes(dumps(ordered_state).encode('utf-8')))
+        state_hash = self.crypto.blake_hash(bytes(dumps(ordered_state).encode('utf-8')))'''
+        state_hash = self.crypto.blake_hash(bytes(dumps(state).encode('utf-8')))
 
         # TODO improve signature storing and validation
         signature_list = []
@@ -301,6 +302,10 @@ class SignedStateManager(object):
             # Verifies signed data
             temp_dict = {'verify_key': verify_key, 'signed': signatures[verify_key]}
             sign_data = self.crypto.validate_state_sign(temp_dict)
+
+            if not sign_data:
+                # Incorrect verify_key
+                return False
 
             node_addr = Prisma().wallet.addr_from_public_key(bytes(verify_key.encode('utf-8')))
 
