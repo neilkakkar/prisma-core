@@ -103,7 +103,7 @@ class SignedStateManager(object):
 
         data = {'last_round': consensus[-1], 'hash': state_hash}
         self.logger.debug("State signature data %s", str(data))
-        sign_data = self.crypto.sign_event(dumps(data), self.graph.keystore['privateKeySeed'])
+        sign_data = self.crypto.sign_data(dumps(data), self.graph.keystore['privateKeySeed'])
 
         # Form transaction
         sign_data['type'] = TYPE_SIGNED_STATE
@@ -143,7 +143,7 @@ class SignedStateManager(object):
         self.logger.debug("Consensus sign response = %s", str(state_signatures))
         self.transaction.insert_transactions_into_pool(state_signatures)
 
-    def handle_new_sign(self, transaction_dict):
+    def handle_new_sign(self, tx_dict):
         """
         If transaction if valid, stores it
         as unchecked to db (that means that we have not
@@ -153,18 +153,18 @@ class SignedStateManager(object):
         in order to create the signature of state
         On success, sign so many state as we can.
 
-        :param transaction_dict: parsed transaction dict
-        :type transaction_dict: dict
+        :param tx_dict: parsed transaction dict
+        :type tx_dict: dict
         :returns: None
         """
-        if transaction_dict:
+        if tx_dict:
             # Validates signature
-            self.logger.debug("transaction_dict: %s", str(transaction_dict))
-            sign_data = self.crypto.validate_state_sign(transaction_dict)
-            self.logger.debug("sign_data: %s", str(sign_data))
+            self.logger.debug("tx_dict: %s", str(tx_dict))
+            sign_data = self.crypto.validate_state_sign(tx_dict)
 
-            self.logger.debug("State_sign_ver_key: %s", sign_data['sign']['verify_key'])
-            self.logger.debug("Node public key: %s", self.graph.keystore['publicKey'])
+            del tx_dict['type']
+            sign_data['sign'] = tx_dict
+            self.logger.debug("sign_data: %s", str(sign_data))
 
             if (sign_data and sign_data['last_round'] > self.graph.last_signed_state and
                 sign_data['sign']['verify_key'] != self.graph.keystore['publicKey'].decode('utf-8')):
@@ -319,6 +319,7 @@ class SignedStateManager(object):
                 sign_data['hash'] == state_hash):
 
                 # All is good add signature to valid list and count it as proof
+                sign_data['sign'] = temp_dict
                 signature_list.append(sign_data)
                 proof_sign_count += 1
             else:

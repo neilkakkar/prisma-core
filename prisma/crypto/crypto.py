@@ -11,8 +11,7 @@ import nacl.encoding
 import nacl.hash
 import nacl.signing
 import nacl.utils
-from json import loads
-
+from json import dumps, loads
 
 class Crypto(object):
     """
@@ -35,119 +34,121 @@ class Crypto(object):
             return False
         return keypair
 
-    def sign_event(self, event, private_key_seed):
+    def sign_data(self, data, private_key_seed, separated=False):
         """
-        Signs event(s) in the hash graph.
-            
-        :param event: a json serialized tuple of dicts.
-        :param private_key_seed: Decrypted private key as byte string.
-        :return: sig_detached: hex formatted byte string of the signature without the signed message
-        :return: verify_key: hex formatted byte string of the verify key.
-        :rtype: string (hex formatted) or bool
+        Sign given data with node private key.
+
+        :param data: any data to sign
+        :type data: dict
+        :param private_key_seed: seed of node private key
+        :type private_key_seed: str
+        :param separated:   saves signed message and signature
+                            separated or concatenates them
+        :type separated: bool
+        :return: verify_key and only signature (separated = True)
+        :return: verify_key and signature concatenated with signed message (separated = False)
+        :rtype: dict
         """
         try:
             keypair = nacl.signing.SigningKey(unhexlify(private_key_seed))
-            signed_event = keypair.sign(bytes(event.encode('utf-8')))
+            signed_event = keypair.sign(bytes(data.encode('utf-8')))
         except Exception as e:
-            self.logger.error("Could not sign event. Reason:", e)
+            self.logger.error("Could not sign data. Reason: %s", str(e))
             return False
-        return {'signed': hexlify(signed_event).decode('utf-8'),
-                'sig_detached': hexlify(signed_event.signature).decode('utf-8'),
-                'verify_key': (keypair.verify_key.encode(encoder=nacl.encoding.HexEncoder)).decode('utf-8')}
+
+        result = {'verify_key': (keypair.verify_key.encode(encoder=nacl.encoding.HexEncoder)).decode('utf-8')}
+
+        if separated:
+            result['sig_detached'] = hexlify(signed_event.signature).decode('utf-8')
+        else:
+            result['signed'] = hexlify(signed_event).decode('utf-8')
+
+        return result
+
+    def verify_signature(self, data, verify_key_hex, sig_detached=None):
+        """
+        Verifies signature for given data
+
+        :param verify_key_hex: verifies key for data (public key)
+        :type verify_key_hex: byte string
+        :param data: data to verify
+        :type data: byte string
+        :param sig_detached: provided if signature store is separated from data otherwise None
+        :type sig_detached: byte string or None
+        :return: the message if successfully verified
+        """
+        try:
+            verify_key = nacl.signing.VerifyKey(verify_key_hex, encoder=nacl.encoding.HexEncoder)
+            res_verify = verify_key.verify(data, signature=sig_detached)
+        except Exception as e:
+            self.logger.error("Could not verify remote event. Reason: %s", str(e))
+            return False
+        return res_verify
 
     def verify_local_event(self, ev):
         """
         Verifies a signed Event.
 
-        :param ev: A named event tuple with the type, Event_('d p t c s') where;
+        :param ev: A named event tuple with the type, Event_('d p t c s') where:
 
             * d: Data/payload!
-            * p: event-hash of 2 parents (latest events) of event
+            * p: event-hash of 2 parents (the latest events) of the event
             * t: time of event creation
-            * c: identifying key of first parent
-            * s: digital sign of event by first parent (using his secret key)
+            * c: identifying key of the first parent
+            * s: digital sign of event by the first parent (using its secret key)
 
         :return: True: Successfully verified event.
         :return: False: Unsuccessfully verified event.
         :rtype: bool
         """
-        try:
-            verify_key = nacl.signing.VerifyKey(bytes(ev.c.encode('utf-8')), encoder=nacl.encoding.HexEncoder)
-            verify_key.verify(unhexlify(ev.s.encode('utf-8')))  # throws an exception if not verified
-        except Exception as e:
-            self.logger.error("Could not verify local event. Reason: %s", e)
+        verify_key_hex = bytes(ev.c.encode('utf-8'))
+        data = bytes(dumps(ev.d, ev.p, ev.t, ev.c).encode('utf-8'))
+        event_sig = unhexlify(ev.s.encode('utf-8'))
+
+        if self.verify_signature(data, verify_key_hex, event_sig):
+            return True
+        else:
             return False
-        return True
 
-    def verify_event(self, ev):
+    def verify_concatenated(self, data):
         """
-        Verifies a serialized event from a remote host.
+        Verifies data that contain signature concatenated with message
 
-        :param ev: dictionary containing the keys,
-                        signed_event: hex formatted byte string of the signature without the signed message.
-                        event: the serialized event.
-                        verify_key_hex: hex formatted byte string of the public key
-        :return: True: Successfully verified Event.
-        :return: False: Unsuccessfully verified Event.
+        :param data: dictionary containing the keys,
+                        signed: concatenated data and signature for it
+                        verify_key: verifies key (public key) to verify signature
+        :return: The message: Successfully verified data.
+        :return: False: Unsuccessfully verified data.
         """
-        event = unhexlify(ev['signed'].encode('utf-8'))
-        verify_key_hex = ev['verify_key'].encode('utf-8')
+        verify_key_hex = data['verify_key'].encode('utf-8')
+        data_bytes = unhexlify(data['signed'].encode('utf-8'))
 
-        try:
-            verify_key = nacl.signing.VerifyKey(verify_key_hex, encoder=nacl.encoding.HexEncoder)
-            res_verify = verify_key.verify(event)
-        except Exception as e:
-            self.logger.error("Could not verify remote event. Reason:", e)
-            return False
-        return res_verify
+        return self.verify_signature(data_bytes, verify_key_hex)
 
-    def validate_state_sign(self, data):
+    def validate_state_sign(self, sign):
         """
-        Validates consenss signature
+        Validates state signature
 
-        :param data: consensus signature
-        :type data: dict
-        :return: decrypted data and signature itself or False if error
+        :param sign: state signature
+        :type sign: dict
+        :return: data or False if error
         :rtype: dict or bool
         """
-        if data:
-            try:
-                if data and 'signed' in data:
-                    state_sign_data = loads(self.verify_event(data).decode('utf-8'))
-                    self.logger.debug("state_sign_data %s", str(state_sign_data))
-                    if state_sign_data:
-                        state_sign_data['sign'] = data
-                        return state_sign_data
-            except Exception as e:
-                self.logger.error("Failed to validate state sign msg: %s", str(e))
-        # it is not a signature or could not validate signatureGs
+        if sign and 'signed' in sign:
+            verify_res = self.verify_concatenated(sign).decode('utf-8')
+            if verify_res:
+                return loads(verify_res)
+
+        # it is not a signature or could not validate signature
+        self.logger.error("Failed to validate state sign")
         return False
-
-    def sign_tx(self, private_key_seed, tx_hash):
-        """
-        Signs a sha256 hash sum of the json serialized transaction dictionary.
-
-        :param private_key_seed: byte string of a hex decimal private key.
-        :param tx_hash: sha256 hash of the json serialized transaction dictionary.
-        :return: False: could not sign the transaction.
-        :return: Success: a dict with a hex encoded detached signature and verify key.
-        :rtype: dict or bool
-        """
-        try:
-            keypair = nacl.signing.SigningKey(unhexlify(private_key_seed))
-            signed_tx = keypair.sign(tx_hash)
-        except Exception as e:
-            self.logger.error("Could not sign data. Reason:", e)
-            return False
-        return {'sig_detached': hexlify(signed_tx.signature),
-                'verify_key': keypair.verify_key.encode(encoder=nacl.encoding.HexEncoder)}
 
     def blake_hash(self, byte_string):
         """
-        Generate a blake2b hash of a byte string.
+        Generates a blake2b hash of a byte string.
 
         :param byte_string:
-        :return: byte string of the generated blake2b hash or false
+        :return: a byte string of the generated blake2b hash or false
         """
         try:
             return nacl.hash.blake2b(byte_string).decode()
@@ -157,10 +158,10 @@ class Crypto(object):
 
     def sha256(self, string):
         """
-        Generate a sha256 hash sum of a string.
+        Generates a sha256 hash sum of a string.
 
         :param string:
-        :return: Success: byte string of the generated sha256 hash.
+        :return: Success: a byte string of the generated sha256 hash.
         :return: False: could not generate the blake2 hash of the byte string
         :rtype: string or bool
         """
@@ -173,10 +174,10 @@ class Crypto(object):
 
     def sha256_tx(self, tx_hex):
         """
-        Generate a sha256 hash sum of a byte string.
+        Generates a sha256 hash sum of a byte string.
 
-        :param tx_hex: hex decimal string of the json serialized transaction.
-        :return: byte string of the generated sha256 hash, false: could not generate the blake2 hash of the byte string
+        :param tx_hex: a hex decimal string of the json serialized transaction.
+        :return: a byte string of the generated sha256 hash, false: could not generate the blake2 hash of the byte string
         """
         try:
             hashed_string = nacl.hash.sha256(tx_hex)
@@ -187,9 +188,9 @@ class Crypto(object):
 
     def generate_random_string(self):
         """
-        Generate a random hex string with the size of 32 bytes.
+        Generates a random hex string with the size of 32 bytes.
 
-        :return: Success: hex decimal string
+        :return: Success: a hex decimal string
         :return: False: could not generate the random string.
         :rtype: string or bool
         """
