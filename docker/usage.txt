@@ -1,0 +1,11 @@
+This shall be put into a standalone script later.
+
+Install Docker
+
+run : docker pull neilkakkar/prisma:full
+# This will be changed to the official Prisma hub. This has been built via prisma-core/docker/base/Dockerfile
+
+For each node instance,
+run : docker run -it -p 5000:8000 neilkakkar/prisma:full
+# Here, 5000 is the port on localhost that maps to listen port, 8000 on the node terminal
+# Hence, in the bootstrap config, prisma.ini, write "127.0.0.1:5000"
