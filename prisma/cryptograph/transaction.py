@@ -185,7 +185,7 @@ class Transaction(object):
                 return False
 
             if len(event.d) > 0:
-                if event.c != self_pub_key:
+                if event.c != self_pub_key.decode("utf-8"):
                     for tx_hex in event.d:
                         tx = self.parse_transaction_hex(tx_hex)
                         # Money transfer
