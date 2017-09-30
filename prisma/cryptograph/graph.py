@@ -128,7 +128,7 @@ class Graph:
         head = Prisma().db.get_head()
 
         if head:
-            signed_events = self.crypto.sign_event(
+            signed_events = self.crypto.sign_data(
                 json.dumps({c: Prisma().db.get_height(h) for c, h in Prisma().db.get_can_see(head).items()}),
                 self.keystore['privateKeySeed'])
             if signed_events:
@@ -170,7 +170,7 @@ class Graph:
         :returns: remote cryptograph without events that we already know and remote head
         :rtype: dict and str
         """
-        msg = self.crypto.verify_event(events_sign)
+        msg = self.crypto.verify_concatenated(events_sign)
         remote_head, remote_cg = json.loads(msg.decode('utf-8'))
 
         self.logger.debug("VALIDATE remote_cg %s", str(remote_cg))
@@ -237,7 +237,7 @@ class Graph:
         # cg is a list of event tuples, it should be a dict of tuples
 
         if head:
-            cs = json.loads((self.crypto.verify_event(signed_event_response)).decode('utf-8'))
+            cs = json.loads((self.crypto.verify_concatenated(signed_event_response)).decode('utf-8'))
             # cs are a dict
             subset = {h: Prisma().db.get_event(h)
                       for h in self._cgc.bfs((head,),
@@ -246,7 +246,7 @@ class Graph:
                                                               if Prisma().db.get_event(p).c not in cs or
                                                               Prisma().db.get_height(p) > cs[Prisma().db.get_event(p).c]))}
             response = json.dumps((head, subset))
-            local_cryptograph_response_res = self.crypto.sign_event(response, self.keystore['privateKeySeed'])
+            local_cryptograph_response_res = self.crypto.sign_data(response, self.keystore['privateKeySeed'])
             self.logger.debug("local_cryptograph_response_res %s", str(local_cryptograph_response_res))
             return local_cryptograph_response_res
         return False
