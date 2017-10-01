@@ -34,21 +34,17 @@ class Crypto(object):
             return False
         return keypair
 
-    def sign_data(self, data, private_key_seed, separated=False):
+    def sign_data(self, data, private_key_seed):
         """
         Sign given data with node private key.
 
-        :param data: any data to sign
+        :param data: data to be signed
         :type data: dict
-        :param private_key_seed: seed of node private key
-        :type private_key_seed: str
-        :param separated:   saves signed message and signature
-                            separated or concatenates them
-        :type separated: bool
-        :return: verify_key and only signature (separated = True)
-        :return: verify_key and signature concatenated with signed message (separated = False)
+        :param private_key_seed: deterministic private key seed
+        :type private_key_seed: hexadecimal string
         :rtype: dict
         """
+
         try:
             keypair = nacl.signing.SigningKey(unhexlify(private_key_seed))
             signed_event = keypair.sign(bytes(data.encode('utf-8')))
@@ -56,90 +52,78 @@ class Crypto(object):
             self.logger.error("Could not sign data. Reason: %s", str(e))
             return False
 
-        result = {'verify_key': (keypair.verify_key.encode(encoder=nacl.encoding.HexEncoder)).decode('utf-8')}
+       	return {'signed': hexlify(signed_event.message).decode('utf-8'),
+               	'sig_detached': hexlify(signed_event.signature).decode('utf-8'),
+               	'verify_key': (keypair.verify_key.encode(encoder=nacl.encoding.HexEncoder)).decode('utf-8')}
 
-        if separated:
-            result['sig_detached'] = hexlify(signed_event.signature).decode('utf-8')
-        else:
-            result['signed'] = hexlify(signed_event).decode('utf-8')
 
-        return result
-
-    def verify_signature(self, data, verify_key_hex, sig_detached=None):
+    def verify_signature(self, data):
         """
         Verifies signature for given data
 
-        :param verify_key_hex: verifies key for data (public key)
-        :type verify_key_hex: byte string
-        :param data: data to verify
-        :type data: byte string
-        :param sig_detached: provided if signature store is separated from data otherwise None
-        :type sig_detached: byte string or None
-        :return: the message if successfully verified
+        :param data: Data to verify
+        :type data: A dictionary of byte strings.
+        :return: Verified data.
+        :rtype: Byte string or a marshalled byte string of dicts in our case.
+        :return: False: Could not verify data
+        :rtype: bool
         """
-        try:
-            verify_key = nacl.signing.VerifyKey(verify_key_hex, encoder=nacl.encoding.HexEncoder)
-            res_verify = verify_key.verify(data, signature=sig_detached)
-        except Exception as e:
-            self.logger.error("Could not verify remote event. Reason: %s", str(e))
-            return False
-        return res_verify
 
-    def verify_local_event(self, ev):
+        try:
+            verify_key = nacl.signing.VerifyKey(data['verify_key'], encoder=nacl.encoding.HexEncoder)
+            res_verify = verify_key.verify(data['signed'], signature=data['sig_detached'])
+            return res_verify
+        except Exception as e:
+            self.logger.error("Could not verify data with signature. Reason: %s", str(e))
+        return False
+
+    def verify_local_event(self, event):
         """
         Verifies a signed Event.
 
-        :param ev: A named event tuple with the type, Event_('d p t c s') where:
+        :param event: A named event tuple with the type, Event_('d p t c s') where:
 
-            * d: Data/payload!
-            * p: event-hash of 2 parents (the latest events) of the event
-            * t: time of event creation
-            * c: identifying key of the first parent
-            * s: digital sign of event by the first parent (using its secret key)
+            # Signed data
+                * d: Data/payload!
+                * p: Event-hash of 2 parents (the latest events) of the event
+                * t: Time of event creation
+
+            # Keys
+                * c: Identifying key of the first parent.
+                     This is the verify key.
+                * s: Digital sign of event by the first parent (using its secret key).
+                     This is the detached signature.
 
         :return: True: Successfully verified event.
         :return: False: Unsuccessfully verified event.
         :rtype: bool
         """
-        verify_key_hex = bytes(ev.c.encode('utf-8'))
-        data = bytes(dumps(ev.d, ev.p, ev.t, ev.c).encode('utf-8'))
-        event_sig = unhexlify(ev.s.encode('utf-8'))
 
-        if self.verify_signature(data, verify_key_hex, event_sig):
-            return True
-        else:
-            return False
+        try:
+            event_data = {'verify_key': bytes(event.c.encode('utf-8')),
+                          'signed': bytes(dumps(event.d, event.p, event.t).encode('utf-8')),
+                          'sig_detached': unhexlify(event.s.encode('utf-8'))}
+            return self.verify_signature(event_data)
+        except Exception as e:
+            self.logger.error("Could not extract event data. Reason: {0}".format(e))
+        return False
 
-    def verify_concatenated(self, data):
-        """
-        Verifies data that contain signature concatenated with message
-
-        :param data: dictionary containing the keys,
-                        signed: concatenated data and signature for it
-                        verify_key: verifies key (public key) to verify signature
-        :return: The message: Successfully verified data.
-        :return: False: Unsuccessfully verified data.
-        """
-        verify_key_hex = data['verify_key'].encode('utf-8')
-        data_bytes = unhexlify(data['signed'].encode('utf-8'))
-
-        return self.verify_signature(data_bytes, verify_key_hex)
-
-    def validate_state_sign(self, sign):
+    def validate_state_sign(self, data):
         """
         Validates state signature
 
-        :param sign: state signature
-        :type sign: dict
-        :return: data or False if error
+        :param data: state signature
+        :type data: dict
+        :return: dict or False if error
         :rtype: dict or bool
         """
-        if sign and 'signed' in sign:
-            verify_res = self.verify_concatenated(sign).decode('utf-8')
+
+        if 'verify_key' in data and 'signed' in data:
+            state_data = {'verify_key': data['verify_key'].encode('utf-8'),
+                          'signed': unhexlify(data['signed'].encode('utf-8'))}
+            verify_res = self.verify_signature(sign).decode('utf-8')
             if verify_res:
                 return loads(verify_res)
-
-        # it is not a signature or could not validate signature
         self.logger.error("Failed to validate state sign")
         return False
 
