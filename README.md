@@ -3,7 +3,7 @@
 Prisma crypto currency. Based on a hashgraph instead of a blockchain.
 
 # White paper
-[White Paper](https://prisma.pw/wp-content/uploads/2017/09/Prisma_WP_rev1.1.pdf)
+[White Paper](https://github.com/prismaproject/whitepaper/raw/master/Prisma_WP_rev1.2.pdf)
 
 # API documentation
 [API Documentation](https://prismaproject.github.io/prisma-core/py-modindex.html)
