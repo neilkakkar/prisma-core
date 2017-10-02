@@ -7,18 +7,27 @@ Licensed under the GNU Lesser General Public License, version 3 or later. See LI
 
 import logging
 import sys
-from collections import OrderedDict
-from pymongo import ASCENDING, DESCENDING
+from pymongo import DESCENDING
 from pymongo import MongoClient
-from pymongo.errors import DuplicateKeyError
 from pymongo.errors import CollectionInvalid
 from pymongo.errors import ConnectionFailure
 from bson import CodecOptions
 
 from prisma.utils.common import Common
 from prisma.config import CONFIG
-from prisma.cryptograph.transaction import TYPE_SIGNED_STATE, TYPE_MONEY_TRANSFER
 
+from prisma.db.events import events
+from prisma.db.rounds import rounds
+from prisma.db.visible import visible
+from prisma.db.votes import votes
+from prisma.db.peer import peer
+from prisma.db.state import state
+from prisma.db.head import head
+from prisma.db.consensus import consensus
+from prisma.db.height import height
+from prisma.db.sign import sign
+from prisma.db.transactions import transactions
+from prisma.db.witness import witness
 
 class PrismaDB(object):
     """
@@ -33,7 +42,7 @@ class PrismaDB(object):
         """
         self.logger = logging.getLogger('PrismaDB')
         self.common = Common()
-
+        
         try:
             self.connection = MongoClient(serverSelectionTimeoutMS=2000, connect=False)
         except Exception as e:
@@ -55,6 +64,20 @@ class PrismaDB(object):
                                  'votes', 'transactions', 'consensus', 'signature', 'state']
         self.create_collections()
         self.create_indexes()
+
+
+        self.events = events(self.db, self)
+        self.rounds = rounds(self.db, self)
+        self.visible = visible(self.db, self)
+        self.votes = votes(self.db, self)
+        self.peer = peer(self.db, self)
+        self.state = state(self.db, self)
+        self.head = head(self.db, self)
+        self.consensus = consensus(self.db, self)
+        self.height = height(self.db, self)
+        self.sign = sign(self.db, self)
+        self.transactions = transactions(self.db, self)
+        self.witness = witness(self.db, self)
 
     def create_indexes(self):
         """
@@ -164,35 +187,7 @@ class PrismaDB(object):
                     * dict of named tuple
                     * bool
         """
-        try:
-            cg_dict = {}
-
-            _event = self.db.events.find_one({'_id': event_id})
-
-            if _event and '_id' in _event and 'event' in _event:
-                cg_dict[_event['_id']] = _event['event']
-
-                if clear_parent:
-                    new_parents_list = []
-                    last_signed = self.get_consensus_last_signed()
-                    for p in cg_dict[event_id]['p']:
-                        rnd = self.get_round(p)
-                        if rnd == -1:
-                            self.logger.error("Could not find hash in rounds !")
-                            return False
-
-                        if rnd > last_signed:
-                            new_parents_list.append(p)
-                    cg_dict[event_id]['p'] = new_parents_list
-
-            self.logger.debug("Get from Events %s", str(cg_dict))
-            if as_tuple and len(_event) > 0:
-                return self.common.dict_to_tuple(cg_dict)[event_id]
-            return cg_dict
-        except Exception as e:
-            self.logger.error("Could not get event. Reason: %s", str(e))
-            self.logger.debug("Event: %s", str(event_id))
-        return False
+        return self.events.get_event(event_id, as_tuple, clear_parent)
 
     def get_events_many(self, as_tuple=True):
         """
@@ -204,19 +199,7 @@ class PrismaDB(object):
         :rtype:     * dict of events
                     * dict of named tuple
         """
-        cg_dict = {}
-        try:
-            for event in self.db.events.find().sort('event.t', ASCENDING):
-                if '_id' in event and 'event' in event:
-                    cg_dict[event['_id']] = event['event']
-        except Exception as e:
-            self.logger.error("Could not get events. Reason: %s", str(e))
-            return cg_dict
-
-        self.logger.debug("Get from Events %s", str(cg_dict))
-        if as_tuple and len(cg_dict) > 0:
-            return self.common.dict_to_tuple(cg_dict)
-        return cg_dict
+        return self.events.get_events_many(as_tuple)
 
     def get_latest_event_time(self):
         """
@@ -227,16 +210,7 @@ class PrismaDB(object):
                     * False - if error
         :rtype: float or bool
         """
-        ev_time_list = []
-        try:
-            for event in self.db.events.find().sort('event.t', -1).limit(1):
-                ev_time_list.append(event)
-            if len(ev_time_list) > 0 and 'event' in ev_time_list[0]:
-                return ev_time_list[0]['event']['t']
-            return 0.0
-        except Exception as e:
-            self.logger.error("Could not retrieve latest event timestamp. Reason:", str(e))
-        return False
+        return self.events.get_latest_event_time()
 
     def insert_event(self, event):
         """
@@ -247,18 +221,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-        try:
-            if event:
-                self.logger.debug("Inserting into events collection: %s", str(event))
-                for ev_id in event:
-                    self.logger.debug("result %s", str(self.db.events.insert_one(
-                        {'_id': ev_id, 'event': self.common.tuple_to_dict(event[ev_id])})))
-                return True
-        except DuplicateKeyError:
-            self.logger.error("Could not insert event. Reason: duplicate (_id) event id.")
-        except Exception as e:
-            self.logger.error("Could not insert event(s). Reason: %s", str(e))
-        return False
+        return self.events.insert_event(event)
 
     def delete_event(self, h):
         """
@@ -268,15 +231,7 @@ class PrismaDB(object):
         :type h: str
         :return: was the delete operation successful
         """
-        try:
-            self.logger.debug("Delete from Events %s", str(h))
-            self.db.events.remove(
-                {'_id': h},
-                {'justOne': True})
-            return True
-        except Exception as e:
-            self.logger.error("Delete from Event. Reason: %s", str(e))
-        return False
+        return self.events.delete_event(h)
 
     # Rounds
 
@@ -290,18 +245,8 @@ class PrismaDB(object):
                     * False   - if the document was not found in collection OR in the case of error
         :rtype: int
         """
-        if h:
-            try:
-                _round = self.db.rounds.find_one({'_id': h})
-                if _round and 'round' in _round:
-                    self.logger.debug("Get from Rounds for hash %s, round = %s", str(h), str(_round['round']))
-                    return _round['round']
-                """ If the round data does not exist, is it safe to assume its round is 0? """
-            except Exception as e:
-                self.logger.error("Could not get round. Reason: %s", str(e))
-                self.logger.debug("Event:", h)
-        return False
-
+        return self.rounds.get_round(h)
+        
     def get_rounds_many(self, less_than=False):
         """
         Gets all rounds from db
@@ -311,21 +256,7 @@ class PrismaDB(object):
         :return: round for every hash or False if error
         :rtype: dict or bool
         """
-        rounds_dict = {}
-        try:
-            if less_than:
-                _rounds = self.db.rounds.find({'round': {'$lte': less_than}})
-            else:
-                _rounds = self.db.rounds.find()
-            if _rounds:
-                for r in _rounds:
-                    if '_id' in r and 'round' in r:
-                        rounds_dict[r['_id']] = r['round']
-                    self.logger.debug("Get from Rounds %s", str(rounds_dict))
-            return rounds_dict
-        except Exception as e:
-            self.logger.error("Could not get rounds. Reason: %s", str(e))
-        return False
+        return self.rounds.get_rounds_many(less_than)
 
     def get_rounds_max(self):
         """
@@ -336,17 +267,8 @@ class PrismaDB(object):
                     * False -  in the case of error
         :rtype: int
         """
-        try:
-            _rounds = self.db.rounds.find().sort('round', -1).limit(1)
-            if _rounds:
-                for r in _rounds:
-                    if 'round' in r:
-                        self.logger.debug("Get max round from Round %s", str(r['round']))
-                        return r['round']
-            return 0
-        except Exception as e:
-            self.logger.error("Could not get max round from Round. Reason: %s", str(e))
-        return False
+        return self.rounds.get_rounds_max()
+        
 
     def get_rounds_hash_list(self, value):
         """
@@ -357,18 +279,8 @@ class PrismaDB(object):
         :return: id (hash) values from all documents with round less than given value
         :rtype: list
         """
-        hash_list = []
-        try:
-            _hashes = self.db.rounds.find({'round_handled': {'$lte': value}})
-            if _hashes:
-                for h in _hashes:
-                    if '_id' in h and 'round' in h:
-                        hash_list.append(h['_id'])
-                    self.logger.debug("Get from Rounds less than %s", str(value))
-            return hash_list
-        except Exception as e:
-            self.logger.error("Could not get from rounds less than %s. Reason: %s", str(value), str(e))
-        return False
+        return self.rounds.get_rounds_hash_list(value)
+        
 
     def get_rounds_less_than(self, r):
         """
@@ -379,18 +291,7 @@ class PrismaDB(object):
         :return: documents with round less than given one
         :rtype: list
         """
-        try:
-            res_dict = {}
-            _hashes = self.db.rounds.find({'round': {'$lt': r}})
-            if _hashes:
-                for h in _hashes:
-                    if '_id' in h and 'round' in h:
-                        res_dict[h['_id']] = h['round']
-                    self.logger.debug("Get hash list from Rounds, round = %s", str(r))
-            return res_dict
-        except Exception as e:
-            self.logger.error("Could not get hash list from Rounds. Reason: %s", str(e))
-            return False
+        return self.rounds.get_rounds_less_than(r)
 
     def insert_round(self, round_info):
         """
@@ -401,20 +302,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-        try:
-            if round_info:
-                self.logger.debug("Insert into Rounds %s", str(round_info))
-                for round_id in round_info:
-                    res = self.db.rounds.update({'_id': round_id},
-                                                {'$set':{'_id': round_id, 'round': int(round_info[round_id])}}, upsert=True)
-                    self.logger.debug("Insert into Rounds collection result %s", str(res))
-                return True
-        except DuplicateKeyError:
-            self.logger.error("Could not insert round. Reason: duplicate (_id) round id.")
-        except Exception as e:
-            self.logger.error("Could not insert round. Reason: %s", str(e))
-            self.logger.debug("Round:", round_info)
-        return False
+        return self.rounds.insert_round(round_info)
 
     def set_round_handled(self, round_info):
         """
@@ -425,20 +313,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-        try:
-            if round_info:
-                self.logger.debug("Set round handled %s", str(round_info))
-                for round_id in round_info:
-                    self.db.rounds.update({'_id': round_id},
-                                                {'$set': {'round_handled': int(round_info[round_id])}}
-                                                , upsert=False)
-                return True
-        except DuplicateKeyError:
-            self.logger.error("Could not set handled round. Reason: duplicate (_id) round id.")
-        except Exception as e:
-            self.logger.error("Could not set handled round. Reason: %s", str(e))
-            self.logger.debug("Round info:", round_info)
-        return False
+        return self.rounds.set_round_handled(round_info)
 
     def delete_round_less_than(self, value):
         """
@@ -449,13 +324,7 @@ class PrismaDB(object):
         :return: was the delete operation successful
         :rtype: bool
         """
-        try:
-            self.logger.debug("Delete from Rounds less than %s", str(value))
-            self.db.rounds.remove({'round': {'$lt': value}})
-            return True
-        except Exception as e:
-            self.logger.error("Could not delete round. Reason: %s", str(e))
-        return False
+        return self.rounds.delete_round_less_than(value)
 
     def delete_round_greater_than(self, value):
         """
@@ -466,13 +335,7 @@ class PrismaDB(object):
         :return: was the delete operation successful
         :rtype: bool
         """
-        try:
-            self.logger.debug("Delete from Rounds greater than %s", str(value))
-            self.db.rounds.remove({'round': {'$gt': value}})
-            return True
-        except Exception as e:
-            self.logger.error("Could not delete round. Reason: %s", str(e))
-        return False
+        return self.rounds.delete_round_greater_than(value)
 
     # Can see
 
@@ -487,21 +350,7 @@ class PrismaDB(object):
                     * False - if error
         :rtype: dict or bool
         """
-        try:
-            if event_id:
-                _can_see = self.db.can_see.find_one({'_id': event_id})
-                if _can_see and 'can_see' in _can_see:
-                    result_dict = {}
-                    for item in _can_see['can_see']:
-                        if 'parent' in item and 'event' in item:
-                            result_dict[item['parent']] = item['event']
-                    self.logger.debug("Get from Can_see %s", str(result_dict))
-                    return result_dict
-                return {}
-        except Exception as e:
-            self.logger.error("Could not get can_see. Reason: %s", str(e))
-            self.logger.debug("Event:", event_id)
-        return False
+        return self.visible.get_can_see(event_id)
 
     def insert_can_see(self, can_see):
         """
@@ -514,20 +363,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-        try:
-            if can_see:
-                for see_id in can_see:
-                    for parent, val in can_see[see_id].items():
-                        self.logger.debug("result %s", str(self.db.can_see.update(
-                            {'_id': see_id},
-                            {'$addToSet': {'can_see': {'parent': parent, 'event': val}}},
-                            upsert=True
-                        )))
-                return True
-        except Exception as e:
-            self.logger.error("Could not insert can_see. Reason: %s", str(e))
-            self.logger.debug("Can_see:", can_see)
-        return False
+        return self.visible.insert_can_see(can_see)
 
     def delete_can_see(self, h):
         """
@@ -538,15 +374,7 @@ class PrismaDB(object):
         :return: was the delete operation successful
         :rtype: bool
         """
-        try:
-            self.logger.debug("Delete from Can_see %s", str(h))
-            self.db.can_see.remove(
-                {'_id': h},
-                {'justOne': True})
-            return True
-        except Exception as e:
-            self.logger.error("Could not delete from Can_see. Reason: %s", str(e))
-        return False
+        return self.visible.delete_can_see(h)
 
     def delete_references_can_see(self, hash_list):
         """
@@ -557,16 +385,7 @@ class PrismaDB(object):
         :return: was the delete operation successful
         :rtype: bool
         """
-        try:
-            for h in hash_list:
-                self.logger.debug("Delete reference from Can_see hash = %s", str(h))
-                self.db.can_see.update({}, {
-                    '$pull': {'can_see': {'$or': [{'parent': h}, {'event': h}]}}
-                }, upsert=False, multi=True)
-            return True
-        except Exception as e:
-            self.logger.error("Could not delete from Can_see. Reason: %s", str(e))
-        return False
+        return self.visible.delete_references_can_see(hash_list)
 
     # Head
 
@@ -578,19 +397,7 @@ class PrismaDB(object):
                     * False if error
         :rtype: str or bool
         """
-        head_list = []
-        try:
-            _heads = self.db.head.find()
-            if _heads:
-                for _head in _heads:
-                    head_list.append(_head)
-                if len(head_list) > 0 and 'head' in head_list[0]:
-                    self.logger.debug("Get from Head %s", str(head_list[0]['head']))
-                    return head_list[0]['head']
-            return head_list
-        except Exception as e:
-            self.logger.error("Could not get head. Reason: %s", str(e))
-        return False
+        return self.head.get_head()
 
     def insert_head(self, head):
         """
@@ -601,14 +408,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-        try:
-            if head:
-                self.logger.debug("Insert Head %s", str(self.db.head.update({}, {"$set": {'head': head}}, upsert=True)))
-                return True
-        except Exception as e:
-            self.logger.error("Could not insert head. Reason: %s", str(e))
-            self.logger.debug("Head:", head)
-        return False
+        return self.head.insert_head(head)
 
     # Height
 
@@ -622,16 +422,7 @@ class PrismaDB(object):
                     * False if error
         :rtype: int or bool
         """
-        try:
-            if event_id:
-                _height = self.db.height.find_one({'_id': event_id})
-                if _height and 'height' in _height:
-                    self.logger.debug("Get from Heights %s", str(_height['height']))
-                    return _height['height']
-        except Exception as e:
-            self.logger.error("Could not get round. Reason: %s", str(e))
-            self.logger.debug("Event:", event_id)
-        return False
+        return self.height.get_height(event_id)
 
     def get_heights_many(self):
         """
@@ -640,18 +431,7 @@ class PrismaDB(object):
         :return: height in format {hash: height}
         :rtype: dict
         """
-        heights_dict = {}
-        try:
-            _heights = self.db.height.find()
-            if _heights:
-                for event in _heights:
-                    if '_id' in event and 'height' in event:
-                        heights_dict[event['_id']] = event['height']
-                self.logger.debug("Get from Heights %s", str(heights_dict))
-            return heights_dict
-        except Exception as e:
-            self.logger.error("Could not get heights. Reason: %s", str(e))
-        return False
+        return self.height.get_heights_many()
 
     def insert_height(self, height_info):
         """
@@ -662,20 +442,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-        try:
-            if height_info:
-                self.logger.debug("Insert into Height %s", str(height_info))
-                for height_id in height_info:
-                    self.logger.debug("Result %s", str(self.db.height.update(
-                        {'_id': height_id},
-                        {'_id': height_id, 'height': int(height_info[height_id])},
-                        upsert=True
-                    )))
-                return True
-        except Exception as e:
-            self.logger.error("Could not insert height. Reason: %s", str(e))
-            self.logger.debug("Height:", height_info)
-        return False
+        return self.height.insert_height(height_info)
 
     def delete_height(self, h):
         """
@@ -686,15 +453,7 @@ class PrismaDB(object):
         :return: was the delete operation successful
         :rtype: bool
         """
-        try:
-            self.logger.debug("Delete from Height %s", str(h))
-            self.db.height.remove(
-                {'_id': h},
-                {'justOne': True})
-            return True
-        except Exception as e:
-            self.logger.error("Could not delete from Height. Reason: %s", str(e))
-        return False
+        return self.height.delete_height(h)
 
     # Witness
 
@@ -708,17 +467,7 @@ class PrismaDB(object):
                     * False - if error
         :rtype: dict or bool
         """
-        try:
-            self.logger.debug("GET FROM WIT, WIT = %s", str(r))
-            _witness = self.db.witness.find_one({'_id': r})
-            if _witness and 'witness' in _witness:
-                self.logger.debug("Get from Witness %s", str(_witness['witness']))
-                return _witness['witness']
-            return {}
-        except Exception as e:
-            self.logger.error("Could not get witness. Reason: %s", str(e))
-            self.logger.debug("Witness:", r)
-        return False
+        return self.witness.get_witness(r)
 
     def get_witness_max_round(self):
         """
@@ -729,17 +478,7 @@ class PrismaDB(object):
                     * False - if error
         :rtype: int or bool
         """
-        try:
-            _witness = self.db.witness.find().sort('_id', -1).limit(1)
-            if _witness:
-                for wit in _witness:
-                    if '_id' in wit:
-                        self.logger.debug("Get max round from Witness %s", str(wit['_id']))
-                        return wit['_id']
-            return 0
-        except Exception as e:
-            self.logger.error("Could not get max round  from Witness. Reason: %s", str(e))
-        return False
+        return self.witness.get_witness_max_round()
 
     def insert_witness(self, witness_info):
         """
@@ -750,23 +489,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-
-        try:
-            if witness_info:
-                self.logger.debug("Insert into witness collection %s", str(witness_info))
-                for r in witness_info:
-                    for key, val in witness_info[r].items():
-                        res = self.db.witness.update(
-                            {'_id': int(r)},
-                            {'$set': {'witness.' + key: val}},
-                            upsert=True
-                        )
-                        #self.logger.debug("Insert into witness collection result %s", str(res))
-                return True
-        except Exception as e:
-            self.logger.error("Could not insert witness. Reason: %s", str(e))
-            self.logger.debug("Witness:", witness_info)
-        return False
+        return self.witness.insert_witness(witness_info)
 
     def delete_witnesses_less_than(self, r):
         """
@@ -777,13 +500,7 @@ class PrismaDB(object):
         :return: was the delete operation successful
         :rtype: bool
         """
-        try:
-            self.logger.debug("Delete from Witnesses %s", str(r))
-            self.db.witness.remove({'_id': {'$lt': r}})
-            return True
-        except Exception as e:
-            self.logger.error("Could not delete from Witnesses. Reason: %s", str(e))
-        return False
+        return self.witness.delete_witnesses_less_than(r)
 
     # Transactions
 
@@ -794,16 +511,7 @@ class PrismaDB(object):
         :return: list of all transactions stored in db (without round)
         :rtype: tuple
         """
-        transaction_list = []
-        try:
-            _transactions = self.db.transactions.find()
-            if _transactions:
-                for tx in _transactions:
-                    if tx and '_id' in tx:
-                        transaction_list.append(tx['_id'])
-        except Exception as e:
-            self.logger.error("Could not get transactions. Reason: %s", str(e))
-        return transaction_list
+        return self.transactions.get_transactions_many()
 
     def get_unsent_transactions_many(self, account_id):
         """
@@ -815,25 +523,7 @@ class PrismaDB(object):
         :return: list of all unsent transactions stored in db, and list of their ids
         :rtype: tuple
         """
-        transaction_list = []
-        id_list = []
-        try:
-            transactions = self.db.transactions.find({
-                'event_hash': {'$exists': False},
-                '$or': [{'senderId': account_id}, {'type': TYPE_SIGNED_STATE}]
-            })
-            if transactions:
-                for tx in transactions:
-                    self.logger.debug("get_unsent_transactions_many item %s", str(tx))
-                    if '_id' in tx and 'tx_dict_hex' in tx:
-                        id_list.append(tx['_id'])
-                        transaction_list.append(tx['tx_dict_hex'])
-                    else:
-                        self.logger.error("Incorrect tx in db !")
-                        continue
-        except Exception as e:
-            self.logger.error("Could not get transactions. Reason: %s", str(e))
-        return id_list, transaction_list
+        return self.transactions.get_unsent_transactions_many(account_id)
 
     def get_all_known_wallets(self):
         """
@@ -842,24 +532,7 @@ class PrismaDB(object):
         :return: unique wallets stored in db
         :rtype: set
         """
-        wallets = set()
-        try:
-            # Gets all wallets in transactions
-            db_res = self.db.transactions.aggregate([
-                {'$group': {'_id': 0,
-                            'sender_wallets': {'$addToSet': '$senderId'},
-                            'recipient_wallets': {'$addToSet': '$recipientId'}}},
-                {'$project': {'balance': {'$setUnion': ['$sender_wallets', '$recipient_wallets']}}}])
-            if db_res:
-                for wal in db_res:
-                    self.logger.debug("TX_WAL %s", str(wal))
-                    wallets |= set(wal['balance'])
-
-                # Gets all wallets saved in state
-                wallets |= self.get_wallets_state()
-        except Exception as e:
-            self.logger.error("Could not get all known wallets. Reason: %s", str(e))
-        return wallets
+        return self.transactions.get_all_known_wallets()
 
     def get_account_balance(self, account_id, r=False):
         """
@@ -872,45 +545,7 @@ class PrismaDB(object):
         :return: account balance
         :rtype: int
         """
-        sent = 0
-        received = 0
-
-        round_check = None
-        if r:
-            round_check = {'$gte': r[0], '$lte': r[1]}
-
-        try:
-            match_dict = {'senderId': account_id}
-            if round_check:
-                match_dict['round'] = round_check
-
-            pipe_sent = [{'$match': match_dict},
-                         {'$group': {'_id': None, 'amount': {'$sum': '$amount'}}}]
-            for i in self.db.transactions.aggregate(pipeline=pipe_sent):
-                if 'amount' in i:
-                    sent = i['amount']
-        except Exception as e:
-            self.logger.debug("Could not retrieve account balance. Reason: %s", str(e))
-            return False
-
-        try:
-            match_dict = {'recipientId': account_id}
-            if round_check:
-                match_dict['round'] = round_check
-
-            pipe_rec = [{'$match': match_dict},
-                        {'$group': {'_id': None, 'amount': {'$sum': '$amount'}}}]
-            for i in self.db.transactions.aggregate(pipeline=pipe_rec):
-                if 'amount' in i:
-                    received = i['amount']
-        except Exception as e:
-            self.logger.debug("Could not retrieve account balance. Reason: %s", str(e))
-            return False
-
-        tx_balance = received - sent
-        bal_res = tx_balance + self.get_state_balance(account_id)
-        self.logger.debug("BAl_RES %s", str(bal_res))
-        return bal_res
+        return self.transactions.get_account_balance(account_id, r)
 
     def get_account_balance_many(self, range=False):
         """
@@ -921,13 +556,7 @@ class PrismaDB(object):
         :return: balance for all known wallets in format {address: amount}
         :rtype: dict
         """
-        wallets_balance = {}
-        for w_id in self.get_all_known_wallets():
-            bal = self.get_account_balance(w_id, range)
-
-            if bal:
-                wallets_balance[w_id] = bal
-        return wallets_balance
+        return self.transactions.get_account_balance_many(range)
 
     def insert_transactions(self, tx_list):
         """
@@ -939,14 +568,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-        try:
-            self.logger.debug("TX LSIT : %s", str(tx_list))
-            if len(tx_list) > 0:
-                self.db.transactions.insert_many(tx_list)
-            return True
-        except Exception as e:
-            self.logger.error("Could not insert transactions. Reason: %s", str(e))
-        return False
+        return self.transactions.insert_transactions(tx_list)
 
     def set_transaction_hash(self, tx_list):
         """
@@ -959,17 +581,7 @@ class PrismaDB(object):
         :return: was the setting operation successful
         :rtype: bool
         """
-        try:
-            event_hash = self.get_head()
-            if event_hash:
-                for tx_id in tx_list:
-                    self.logger.debug("Set event hash to transaction with id = %s", str(tx_id))
-                    self.db.transactions.update({'_id': tx_id}, {'$set': {'event_hash': event_hash}})
-                return True
-        except Exception as e:
-            self.logger.error("Could not set event hash to transaction. Reason: %s", str(e))
-            self.logger.debug("Tx list:", str(tx_list))
-        return False
+        return self.transactions.set_transaction_hash(tx_list)
 
     def set_transaction_round(self, ev_hash, r):
         """
@@ -984,16 +596,7 @@ class PrismaDB(object):
         :return: was the setting operation successful
         :rtype: bool
         """
-        try:
-            res = self.db.transactions.update({'event_hash': ev_hash}, {'$set': {'round': r}},
-                                              upsert=False, multi=True)
-            self.logger.debug("Set round for our tx ev_hash = %s, round = %s, result = %s", str(ev_hash),
-                              str(r), str(res))
-            return True
-        except Exception as e:
-            self.logger.error("Could not set round for transaction. Reason: %s", str(e))
-            self.logger.debug("Ev_hash:", str(ev_hash))
-        return False
+        return self.transactions.set_transaction_round(ev_hash, r)
 
     def delete_transaction_less_than(self, r):
         """
@@ -1004,15 +607,7 @@ class PrismaDB(object):
         :return: was the delete operation successful
         :rtype: bool
         """
-        try:
-            self.logger.debug("Delete from Transaction less than %s", str(r))
-            result = self.db.transactions.remove({'round': {'$lte': r}})
-            self.logger.debug("Delete from Transaction result %s", str(result))
-            return True
-        except Exception as e:
-            self.logger.error("Could not delete transaction. Reason: %s", str(e))
-            self.logger.debug("Round:", r)
-        return False
+        return self.transactions.delete_transaction_less_than(r)
 
     def delete_money_transfer_transaction_less_than(self, r):
         """
@@ -1024,15 +619,7 @@ class PrismaDB(object):
         :return: was the delete operation successful
         :rtype: bool
         """
-        try:
-            self.logger.debug("Delete from money transfer transaction less than %s", str(r))
-            result = self.db.transactions.remove({'round': {'$lte': r}, 'type': str(TYPE_MONEY_TRANSFER)})
-            self.logger.debug("Delete from money transfer transaction result %s", str(result))
-            return True
-        except Exception as e:
-            self.logger.error("Could not delete transaction. Reason: %s", str(e))
-            self.logger.debug("Round:", r)
-        return False
+        return self.transactions.delete_money_transfer_transaction_less_than(r)
 
     # Votes
 
@@ -1045,15 +632,7 @@ class PrismaDB(object):
         :return:    * votes dict in format {hash: vote(T/F)}
                     * False - if error
         """
-        try:
-            if vote_id:
-                _vote = self.db.votes.find_one({'_id': vote_id})
-                if _vote and 'vote' in _vote:
-                    self.logger.debug("Get from Vote %s", str(_vote['vote']))
-                    return _vote['vote']
-        except Exception as e:
-            self.logger.error("Could not get vote. Reason: %s", str(e))
-        return False
+        return self.votes.get_vote(vote_id)
 
     def insert_vote(self, vote):
         """
@@ -1064,19 +643,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-        try:
-            if vote:
-                for vote_id in vote:
-                    for key, val in vote[vote_id].items():
-                        self.logger.debug("Result %s", self.db.votes.update(
-                            {'_id': vote_id},
-                            {'$set': {'_id': vote_id, 'vote.' + key: val}}, upsert=True
-                        ))
-                return True
-        except Exception as e:
-            self.logger.error("Could not insert Vote. Reason: %s", str(e))
-            self.logger.debug("Vote:", vote)
-        return False
+        return self.votes.insert_vote(vote)
 
     def delete_votes(self, h):
         """ Deletes votes from db by given hash
@@ -1086,15 +653,7 @@ class PrismaDB(object):
         :return: was the delete operation successful
         :rtype: bool
         """
-        try:
-            self.logger.debug("Delete from Votes %s", str(h))
-            self.db.votes.remove(
-                {'_id': h},
-                {'justOne': True})
-            return True
-        except Exception as e:
-            self.logger.error("Could not delete from Votes. Reason: %s", str(e))
-        return False
+        return self.votes.delete_votes(h)
 
     # Famous
 
@@ -1112,17 +671,7 @@ class PrismaDB(object):
                     * None  - if the hash does not exist
         :rtype: bool or None
         """
-        try:
-            if witness:
-                _witness = self.db.famous.find_one({'_id': witness})
-                if _witness:
-                    self.logger.debug("Get from Famous hash = %s, result =  %s", str(witness), str(_witness['famous']))
-                    return [_witness['famous']]
-        except Exception as e:
-            self.logger.error("Could not get famous witness. Reason: %s", str(e))
-
-        self.logger.debug("Get from Famous hash = %s, result =  None", str(witness))
-        return None
+        return self.votes.get_famous(witness)
 
     def get_famous_many(self):
         """
@@ -1132,17 +681,7 @@ class PrismaDB(object):
                     * False - if error
         :rtype: dict or bool
         """
-        mfamous_dict = {}
-        try:
-            _mfamous = self.db.famous.find()
-            if _mfamous:
-                for famous in _mfamous:
-                    if '_id' in famous and 'famous' in famous:
-                        mfamous_dict[famous['_id']] = famous['famous']
-            return mfamous_dict
-        except Exception as e:
-            self.logger.error("Could not get famous witnesses. Reason: %s", str(e))
-        return False
+        return self.votes.get_famous_many()
 
     def insert_famous(self, famous_info):
         """
@@ -1153,19 +692,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-        try:
-            if famous_info:
-                self.logger.debug("Insert into Famous %s", str(famous_info))
-                for wit_id in famous_info:
-                    self.logger.debug("Result Famous %s", str(self.db.famous.update(
-                        {'_id': wit_id},
-                        {'$set': {'_id': wit_id, 'famous': famous_info[wit_id]}}, upsert=True
-                    )))
-                return True
-        except Exception as e:
-            self.logger.error("Could not insert Famous. Reason: %s", str(e))
-            self.logger.debug("Witnesses:", famous_info)
-        return False
+        return self.votes.insert_famous(famous_info)
 
     def check_famous(self, h):
         """
@@ -1176,13 +703,7 @@ class PrismaDB(object):
         :return: is present or not
         :rtype: int
         """
-        try:
-            is_famous = self.db.famous.find({'_id': h}, {'_id': 1}).limit(1).count()
-            self.logger.debug("Check famous for hash = %s, result = %s", str(h), str(is_famous))
-            return is_famous
-        except Exception as e:
-            self.logger.error("Could not check famous. Reason: %s", str(e))
-        return False
+        return self.votes.check_famous(h)
 
     def delete_famous(self, h):
         """ Deletes famous info with given hash from db
@@ -1192,15 +713,7 @@ class PrismaDB(object):
         :return: was the delete operation successful
         :rtype: bool
         """
-        try:
-            self.logger.debug("Delete from Famous %s", str(h))
-            self.db.famous.remove(
-                {'_id': h},
-                {'justOne': True})
-            return True
-        except Exception as e:
-            self.logger.error("Could not delete from Famous. Reason: %s", str(e))
-        return False
+        return self.votes.delete_famous(h)
 
     # Consensus
 
@@ -1220,22 +733,7 @@ class PrismaDB(object):
         :return: consensus list
         :rtype: tuple
         """
-        result = []
-        try:
-            if not sort:
-                _consensus = self.db.consensus.find({'signed': sign}).limit(lim)
-            else:
-                _consensus = self.db.consensus.find({'signed': sign}).sort('consensus', sort).limit(lim)
-            if _consensus:
-                for cs in _consensus:
-                    if cs and 'consensus' in cs:
-                        result.append(cs['consensus'])
-                self.logger.debug("GetConsensus: {0}".format(result))
-            return result
-        except Exception as e:
-            self.logger.error("Could not get consensus. Reason: %s", str(e))
-            self.logger.debug("SORT: {0}".format(sort))
-        return result
+        return self.consensus.get_consensus_many(lim, sign, sort)
 
     def get_consensus_count(self):
         """
@@ -1244,13 +742,7 @@ class PrismaDB(object):
         :return: consensus count or 0 if the collection is empty
         :rtype: int
         """
-        try:
-            count = self.db.consensus.find({}).count()
-            self.logger.debug("Get consensus count: {0}".format(count))
-            return count
-        except Exception as e:
-            self.logger.error("Could not get consensus. Reason: %s", str(e))
-        return 0
+        return self.consensus.get_consensus_count()
 
     def get_consensus_greater_than(self, value, lim=0):
         """
@@ -1263,21 +755,7 @@ class PrismaDB(object):
         :return: consensus list
         :rtype: tuple
         """
-        result = []
-        try:
-            _consensus = self.db.consensus.find({'consensus': {'$gt': value}}).limit(lim)
-            self.logger.debug("value: {0}".format(value))
-            self.logger.debug("limit: {0}".format(lim))
-            self.logger.debug("GRATER THAN: {0} ".format(_consensus))
-            if _consensus:
-                for cs in _consensus:
-                    self.logger.debug("cs: {0}".format(cs))
-                    if cs and 'consensus' in cs:
-                        result.append(cs['consensus'])
-                self.logger.debug("Get from consensus greater than value: {0}, {1}".format(value, result))
-        except Exception as e:
-            self.logger.error("Could from consensus greater than value. Reason: %s", str(e))
-        return result
+        return self.consensus.get_consensus_greater_than(value, lim)
 
     def get_consensus_last_sent(self):
         """
@@ -1288,20 +766,7 @@ class PrismaDB(object):
                     * False - if error
         :rtype: int or bool
         """
-        try:
-            _consensus = self.db.consensus.find({'last_sent': {'$exists': True}})
-
-            if _consensus:
-                for item in _consensus:
-                    self.logger.debug("CHECK = %s", str(item))
-                    if 'consensus' in item:
-                        self.logger.debug("Get consensus last sent %s", str(item['consensus']))
-                        return item['consensus']
-            self.logger.debug("Last sent not found return last signed consensus")
-            return self.get_consensus_last_signed()
-        except Exception as e:
-            self.logger.error("Could not get last sent from consensus. Reason: %s", str(e))
-        return False
+        return self.consensus.get_consensus_last_sent()
 
     def get_consensus_last_created_sign(self):
         """
@@ -1312,20 +777,7 @@ class PrismaDB(object):
                     * False - if error
         :rtype: int or bool
         """
-        try:
-            _consensus = self.db.consensus.find({'last_created_sign': {'$exists': True}})
-
-            if _consensus:
-                for item in _consensus:
-                    self.logger.debug("CHECK = %s", str(item))
-                    if 'consensus' in item:
-                        self.logger.debug("Get consensus last sent %s", str(item['consensus']))
-                        return item['consensus']
-            self.logger.debug("Last created signature not found return last sent sign")
-            return self.get_consensus_last_sent()
-        except Exception as e:
-            self.logger.error("Could not get last sent from consensus. Reason: %s", str(e))
-            return False
+        return self.consensus.get_consensus_last_created_sign()
 
     def get_consensus_last_signed(self):
         """
@@ -1334,11 +786,7 @@ class PrismaDB(object):
         :return: last signed round or -1 if it does not exist
         :rtype: int
         """
-        con = self.get_consensus_many(sign=True, lim=1, sort=-1)
-        if con:
-            return con[0]
-        else:
-            return -1
+        return self.consensus.get_consensus_last_signed()
 
     def get_last_consensus(self):
         """
@@ -1347,14 +795,7 @@ class PrismaDB(object):
         :return: last consensus round
         :rtype: int
         """
-        try:
-            last_consensus = self.db.consensus.find({}).sort('consensus', -1).limit(1)
-            for res in last_consensus:
-                return res['consensus']
-            return -1
-        except Exception as e:
-            self.logger.error("Could not get consensus. Reason: %s", str(e))
-            return False
+        return self.consensus.get_last_consensus()
 
     def insert_consensus(self, consensus, signed=False):
         """
@@ -1365,14 +806,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-        try:
-            for con in consensus:
-                self.db.consensus.insert({'consensus': con, 'signed': signed})
-            return True
-        except Exception as e:
-            self.logger.error("Could not insert consensus. Reason: %s", str(e))
-            self.logger.debug("Consensus:", consensus)
-        return False
+        return self.consensus.insert_consensus(consensus, signed)
 
     def check_consensus(self, r):
         """
@@ -1383,13 +817,7 @@ class PrismaDB(object):
         :return: is present or not
         :rtype: int
         """
-        try:
-            is_present = self.db.consensus.find({'consensus': r}, {'_id': 1}).limit(1).count()
-            self.logger.debug("Check consensus for round = %s, result = %s", str(r), str(is_present))
-            return is_present
-        except Exception as e:
-            self.logger.error("Could not check famous. Reason: %s", str(e))
-        return False
+        return self.consensus.check_consensus(r)
 
     def sign_consensus(self, count):
         """
@@ -1400,16 +828,7 @@ class PrismaDB(object):
         :return: was the sign operation successful
         :rtype: bool
         """
-        try:
-            if count:
-                for i in range(count):
-                    self.logger.debug("Result of sign consensus %s",
-                                      str(self.db.consensus.update({'signed': False}, {'$set': {'signed': True}})))
-            return True
-        except Exception as e:
-            self.logger.error("Could not sign consensus. Reason: %s", str(e))
-            self.logger.debug("Count:", count)
-        return False
+        return self.consensus.sign_consensus(count)
 
     def set_consensus_last_sent(self, consensus):
         """
@@ -1420,16 +839,7 @@ class PrismaDB(object):
         :return: was the setting operation successful
         :rtype: bool
         """
-        try:
-            self.logger.debug("Set consensus last sent con = %s", str(consensus))
-            self.db.consensus.update({'last_sent': {'$exists': True}}, {'$unset': {'last_sent': ''}})
-            self.db.consensus.update({'consensus': consensus},
-                                     {'$set': {'last_sent': True}})
-            return True
-        except Exception as e:
-            self.logger.error("Could not set consensus last sent. Reason: %s", str(e))
-            self.logger.debug("Consensus:", consensus)
-            return False
+        return self.consensus.set_consensus_last_sent(consensus)
 
     def set_consensus_last_created_sign(self, consensus):
         """
@@ -1440,29 +850,20 @@ class PrismaDB(object):
         :return: was the setting operation successful
         :rtype: bool
         """
-        try:
-            self.logger.debug("Set last created signature con = %s", str(consensus))
-            self.db.consensus.update({'last_created_sign': {'$exists': True}}, {'$unset': {'last_created_sign': ''}})
-            self.db.consensus.update({'consensus': consensus},
-                                     {'$set': {'last_created_sign': True}})
-            return True
-        except Exception as e:
-            self.logger.error("Could not set last created signature. Reason: %s", str(e))
-            self.logger.debug("Consensus:", consensus)
-            return False
+        return self.consensus.set_consensus_last_created_sign(consensus)
 
     # Signature
 
     def get_signature(self, last_round):
-        try:
-            self.logger.debug("Get signatures for last_round = %s", str(last_round))
-            sign = self.db.signature.find({'_id': last_round}).limit(1)
-            if sign:
-                for sg in sign:
-                    return sg
-        except Exception as e:
-            self.logger.error("Could not signature for last_round = %s. Reason: %s", str(last_round), str(e))
-        return False
+        """
+        Gets signatures for last round
+
+        :param last_round: last round of state
+        :type last_round: int
+        :return: signatures or False if error
+        :rtype: dict or bool
+        """
+        return self.sign.get_signature(last_round)
 
     def get_signature_grater_than(self, last_round):
         """
@@ -1473,14 +874,7 @@ class PrismaDB(object):
         :return: signatures or False if error
         :rtype: dict or bool
         """
-        try:
-            sign = self.db.signature.find({'_id': {'$gt': last_round}}).limit(1)
-            if sign:
-                for sg in sign:
-                    return sg
-        except Exception as e:
-            self.logger.error("Could not signature grater than %s witness. Reason: %s", str(last_round), str(e))
-        return False
+        return self.sign.get_signature_grater_than(last_round)
 
     def check_if_signature_present(self, last_round, ver_key):
         """
@@ -1493,15 +887,7 @@ class PrismaDB(object):
         :return: False if it was found, True if was not found or error
         :rtype: bool
         """
-        try:
-            sign = self.db.signature.find({'_id': last_round, 'sign.verify_key': ver_key}).count()
-            if sign:
-                return True
-            else:
-                return False
-        except Exception as e:
-            self.logger.error("Could not check if signature present. Reason: %s", str(e))
-        return True
+        return self.sign.check_if_signature_present(last_round, ver_key)
 
     def insert_signature(self, signature):
         """
@@ -1512,19 +898,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-        try:
-            if signature and not self.check_if_signature_present(signature['last_round'], signature['sign']['verify_key']):
-                self.db.signature.update({'_id': signature['last_round']},
-                                         {'$addToSet': {'sign': signature['sign']},
-                                          '$set': {
-                                              '_id': signature['last_round'],
-                                              'hash': signature['hash']
-                                          }}, upsert=True)
-                return True
-        except Exception as e:
-            self.logger.error("Could not insert signature. Reason: %s", str(e))
-            self.logger.debug("Signature:", signature)
-        return False
+        return self.sign.insert_signature(signature)
 
     def unset_unchecked_signature(self, last_round):
         """
@@ -1536,14 +910,7 @@ class PrismaDB(object):
         :return: was the delete operation successful
         :rtype: bool
         """
-        try:
-            self.db.signature.update({'_id': last_round},
-                                     {'$unset': {'unchecked_pair': ''}})
-            return True
-        except Exception as e:
-            self.logger.error("Could not unset unchecked in signature. Reason: %s", str(e))
-            self.logger.debug("Start:", last_round)
-        return False
+        return self.sign.unset_unchecked_signature(last_round)
 
     def insert_signature_unchecked(self, signature):
         """
@@ -1555,19 +922,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-        try:
-            self.logger.debug("Insert signature as unchecked %s", str(signature))
-            if signature:
-                self.db.signature.update({'_id': signature['last_round']},
-                                         {'$addToSet': {'unchecked_pair': {signature['hash']: signature['sign']}},
-                                          '$set': {
-                                              '_id': signature['last_round']
-                                          }}, upsert=True)
-                return True
-        except Exception as e:
-            self.logger.error("Could not insert unchecked signature. Reason: %s", str(e))
-            self.logger.debug("Unchecked Signature: %s", str(signature))
-        return False
+        return self.sign.insert_signature_unchecked(signature)
 
     # State
 
@@ -1582,17 +937,8 @@ class PrismaDB(object):
         :return: state (balance of all wallets)
         :rtype: dict
         """
-        try:
-            projection = None
-            if for_sync:
-                projection = {'hash': False, 'signed': False}
 
-            state = self.db.state.find_one({'_id': r}, projection)
-            self.logger.debug("Get state %s", str(state))
-            return state
-        except Exception as e:
-            self.logger.error("Could not get state for round %s. Reason: %s", r, str(e))
-        return False
+        return self.state.get_state(r, exclude_hash)
 
     def get_last_state(self):
         """
@@ -1600,14 +946,7 @@ class PrismaDB(object):
 
         :return:
         """
-        try:
-            state = list(self.db.state.find().sort('_id', -1).limit(1))
-            if not state:
-                return False
-            return state[0]
-        except Exception as e:
-            self.logger.error("Could not get the last state. Reason: %s", str(e))
-            return False
+        return self.state.get_last_state()
 
     def get_state_many(self, gt=0, signed=True, for_sync=True):
         """
@@ -1622,25 +961,8 @@ class PrismaDB(object):
         :return: list of states
         :rtype: list
         """
-        state = []
-        try:
-            query = {'_id': {'$gt': gt}}
-            if signed:
-                query['signed'] = True
 
-            projection = None
-            if for_sync:
-                projection = {'hash': False, 'signed': False}
-
-            db_res = self.db.state.find(query, projection)
-            if db_res:
-                for s in db_res:
-                    state.append(s)
-            self.logger.debug("Get state MANY %s", str(state))
-            return state
-        except Exception as e:
-            self.logger.error("Could not get state. Reason: %s", str(e))
-        return False
+        return self.state.get_state_many(gt, signed, exclude_hash)
 
     def get_state_balance(self, address):
         """
@@ -1651,20 +973,7 @@ class PrismaDB(object):
         :return: wallet balance
         :rtype: int
         """
-        try:
-            db_res = self.db.state.find({'balance.' + address: {'$exists': True}},
-                                           {'_id': 0, 'balance.' + address: 1}).limit(1).sort('_id', -1)
-            if db_res:
-                for balance in db_res:
-                    self.logger.debug("Get balance for address %s from state result = %s", str(address), str(balance['balance'][address]))
-                    return balance['balance'][address]
-                else:
-                    self.logger.debug("No balance for address %s, return 0", str(address))
-                    return 0
-        except Exception as e:
-            self.logger.error("Could not get state balance. Reason: %s", str(e))
-            self.logger.debug("Address: %s", address)
-        return False
+        return self.state.get_state_balance(address)
 
     def get_wallets_state(self):
         """
@@ -1673,17 +982,7 @@ class PrismaDB(object):
         :return:unique wallets
         :rtype: set
         """
-        try:
-            db_res = self.db.state.find().limit(1).sort('_id', -1)
-            if db_res:
-                for res in db_res:
-                    self.logger.debug("Get wallets from state %s", str(res))
-                    wallets = set(res['balance'].keys())
-                    return wallets
-            return set()
-        except Exception as e:
-            self.logger.error("Could not get state. Reason: %s", str(e))
-        return False
+        return self.state.get_wallets_state()
 
     def insert_state(self, state, hash, signed=False):
         """
@@ -1698,16 +997,8 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-        try:
-            state['hash'] = hash
-            state['signed'] = signed
-            self.db.state.insert(state)
-            self.logger.debug("Insert into state balance = %s, hash = %s, signed = %s",
-                              str(state), str(hash), str(signed))
-            return True
-        except Exception as e:
-            self.logger.error("Could not insert state. Reason: %s", str(e))
-        return False
+
+        return self.state.insert_state(state, hash, signed)
 
     def set_state_signed(self, round):
         """
@@ -1718,14 +1009,7 @@ class PrismaDB(object):
         :return: was the setting operation successful
         :rtype: bool
         """
-        try:
-            self.db.state.update({'_id': round}, {'$set': {'signed': True}})
-            self.logger.debug("Set state signed %s", str(round))
-            return True
-        except Exception as e:
-            self.logger.error("Could set state signed. Reason: %s", str(e))
-            self.logger.debug("Round:", round)
-        return False
+        return self.state.set_state_signed(round)
 
     def delete_state_less_than(self, round):
         """
@@ -1738,56 +1022,19 @@ class PrismaDB(object):
         :return: was the delete operation successful
         :rtype: bool
         """
-        try:
-            self.logger.debug("Delete from state less than round %s", str(round))
-            result = self.db.state.remove({'_id': {'$lt': round}, 'signed': True})
-            self.logger.debug("Delete from state result %s", str(result))
-            return True
-        except Exception as e:
-            self.logger.error("Could not delete from state. Reason: %s", str(e))
-        return False
+        return self.state.delete_state_less_than(round)
 
     def get_state_with_proof_many(self, gt):
-        db_states = self.get_state_many(gt)
-        stateunit_list = []
-        for state in db_states:
-            signatures = {}
-            for sign in self.get_signature(state['_id'])['sign']:
-                signatures[sign['verify_key']] = sign['signed']
-
-            stateunit = {
-                'state': state,
-                'signatures': signatures
-            }
-            stateunit_list.append(stateunit)
-        return stateunit_list
+        return self.state.get_state_with_proof_many(gt)
 
     def get_state_with_proof(self, r):
-        db_state = self.get_state(r, True)
-
-        signatures = {}
-        for sign in self.get_signature(r)['sign']:
-            signatures[sign['verify_key']] = sign['signed']
-
-        stateunit = {
-            'state': db_state,
-            'signatures': signatures
-        }
-
-        return stateunit
+        return self.state.get_state_with_proof(r)
 
     # Peer
 
     def get_peer(self, ip):
         # No usage
-        try:
-            if ip:
-                _peer = self.db.peers.find_one({'_id': ip})
-                return _peer
-        except Exception as e:
-            self.logger.error("Could not get peer. Reason: %s", str(e))
-            self.logger.debug("Peer:", ip)
-        return False
+        return self.peer.get_peer(ip)
 
     def get_peers_many(self):
         """
@@ -1796,16 +1043,7 @@ class PrismaDB(object):
         :return: peer list or False if error
         :rtype: tuple or bool
         """
-        peer_list = []
-        try:
-            _peers = self.db.peers.find()
-            if _peers:
-                for _peer in _peers:
-                    peer_list.append(_peer)
-            return peer_list
-        except Exception as e:
-            self.logger.error("Could not get peers. Reason: %s", str(e))
-        return False
+        return self.peer.get_peers_many()
 
     def count_peers(self):
         """
@@ -1815,12 +1053,7 @@ class PrismaDB(object):
         :return: peer count
         :rtype: int
         """
-        try:
-            return self.db.peers.count()
-        except Exception as e:
-            self.logger.error("Could not get peer count. Reason: %s", str(e))
-        """ Note: 0 can also mean False in python."""
-        return 0
+        return self.peer.count_peers()
 
     def insert_peer(self, peer):
         """
@@ -1831,21 +1064,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
-        try:
-            if peer and '_id' in peer:
-                # host is forced to 8000 unless it's in developer mode
-                port = 8000
-                if CONFIG.getboolean('developer', 'developer_mode'):
-                    port = peer['port']
-                self.db.peers.update({'_id': peer['_id']}, {'$set':  {'seen': peer['seen'],
-                                                                      'latest_event': peer['latest_event'],
-                                                                      'host': peer['host'],
-                                                                      'port': port}}, upsert=True)
-            return True
-        except Exception as e:
-            self.logger.error("Could not insert peer. Reason: %s", str(e))
-            self.logger.debug("Peer:", peer)
-        return False
+        return self.peer.insert_peer(peer)
 
     def delete_peers(self):
         """
@@ -1854,33 +1073,15 @@ class PrismaDB(object):
         :return: was the delete operation successful
         :rtype: bool
         """
-        try:
-            if self.db.peers.remove({}):
-                return True
-        except Exception as e:
-            self.logger.error("Could not delete peer table. Reason: %s", str(e))
-        return False
+        return self.peer.delete_peers()
 
     def delete_peer(self, ip):
         # No usage
-        try:
-            if ip and self.db.peers.remove({'_id': ip}):
-                return True
-        except Exception as e:
-            self.logger.error("Could not delete peer %s from peer table: %s", str(ip), str(e))
-        return False
+        return self.peer.delete_peer(ip)
 
     def get_random_peer(self):
         # No usage
-        try:
-            peer_list = []
-            peer = self.db.peers.aggregate([{"$sample": {'size': 1}}])
-            for p in peer:
-                peer_list.append(p)
-            return peer_list
-        except Exception as e:
-            self.logger.error("Could not retrieve a random peer from database. Reason:", str(e))
-        return False
+        return self.peer.get_random_peer()
 
     def get_events_by_time(self, time):
         ev_list = []
