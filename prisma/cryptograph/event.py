@@ -76,10 +76,10 @@ class Event(object):
         self.logger.debug("NEW_EVENT: %s %s", str(d), str(p))
 
         t = time()
-        s = self.crypto.sign_event(dumps((d, p, t, self.graph.keystore['publicKey'].decode())),
-                                   self.graph.keystore['privateKeySeed'])
+        s = self.crypto.sign_data(dumps(d, p, t, self.graph.keystore['publicKey'].decode()),
+                                       self.graph.keystore['privateKeySeed'], True)
         self.logger.debug("Sign: %s", s['sig_detached'])
-        ev = Event_(d, p, t, s['verify_key'], s['signed'])
+        ev = Event_(d, p, t, s['verify_key'], s['sig_detached'])
         self.logger.debug("Created event : %s", str(ev))
         return self.crypto.blake_hash(bytes(dumps(ev).encode('utf-8'))), ev
 
@@ -94,9 +94,7 @@ class Event(object):
         :return: True if event valid and False otherwise
         :rtype: bool
         """
-        try:
-            self.crypto.verify_local_event(ev)
-        except ValueError:
+        if not self.crypto.verify_local_event(ev):
             return False
 
         self.logger.debug("VALID_CHECK %s %s", str(blake2hash), str(ev))

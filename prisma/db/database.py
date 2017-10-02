@@ -11,6 +11,7 @@ from pymongo import DESCENDING
 from pymongo import MongoClient
 from pymongo.errors import CollectionInvalid
 from pymongo.errors import ConnectionFailure
+from bson import CodecOptions
 
 from prisma.utils.common import Common
 from prisma.config import CONFIG
@@ -50,6 +51,9 @@ class PrismaDB(object):
 
         self.logger.info('Connecting to MongoDB on localhost.')
         self.db = self.connection[db_name]
+
+        opts = CodecOptions(document_class = OrderedDict)
+        self.db.state = self.db.state.with_options(codec_options=opts)
 
         if not self.is_running():
             self.logger.error("MongoDB is not started, exiting.")
@@ -922,17 +926,18 @@ class PrismaDB(object):
 
     # State
 
-    def get_state(self, r, exclude_hash=False):
+    def get_state(self, r, for_sync=False):
         """
         Gets state by last_round
 
         :param r: last_round for state
         :type r: int
-        :param exclude_hash: remove hash from result or not
-        :type exclude_hash: bool
+        :param for_sync: remove hash and signed flag from result or not
+        :type for_sync: bool
         :return: state (balance of all wallets)
         :rtype: dict
         """
+
         return self.state.get_state(r, exclude_hash)
 
     def get_last_state(self):
@@ -943,7 +948,7 @@ class PrismaDB(object):
         """
         return self.state.get_last_state()
 
-    def get_state_many(self, gt=0, signed=True, exclude_hash=True):
+    def get_state_many(self, gt=0, signed=True, for_sync=True):
         """
         Gets all state stored in db
         
@@ -951,11 +956,12 @@ class PrismaDB(object):
         :type gt: int
         :param signed: get only signed or not
         :type signed: bool
-        :param exclude_hash: remove hash from result or not
-        :type exclude_hash: bool
+        :param for_sync: remove hash and signed flag from result or not
+        :type for_sync: bool
         :return: list of states
         :rtype: list
         """
+
         return self.state.get_state_many(gt, signed, exclude_hash)
 
     def get_state_balance(self, address):
@@ -991,6 +997,7 @@ class PrismaDB(object):
         :return: was the insertion successful
         :rtype: bool
         """
+
         return self.state.insert_state(state, hash, signed)
 
     def set_state_signed(self, round):
