@@ -77,7 +77,7 @@ class Event(object):
 
         t = time()
         s = self.crypto.sign_data(dumps(d, p, t, self.graph.keystore['publicKey'].decode()),
-                                       self.graph.keystore['privateKeySeed'], True)
+                                       self.graph.keystore['privateKeySeed'])
         self.logger.debug("Sign: %s", s['sig_detached'])
         ev = Event_(d, p, t, s['verify_key'], s['sig_detached'])
         self.logger.debug("Created event : %s", str(ev))

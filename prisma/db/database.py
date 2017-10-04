@@ -939,7 +939,7 @@ class PrismaDB(object):
         :rtype: dict
         """
 
-        return self.state.get_state(r, exclude_hash)
+        return self.state.get_state(r, for_sync)
 
     def get_last_state(self):
         """
