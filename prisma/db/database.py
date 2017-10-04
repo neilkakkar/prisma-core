@@ -12,22 +12,23 @@ from pymongo import MongoClient
 from pymongo.errors import CollectionInvalid
 from pymongo.errors import ConnectionFailure
 from bson import CodecOptions
+from collections import OrderedDict
 
 from prisma.utils.common import Common
 from prisma.config import CONFIG
 
-from prisma.db.events import events
-from prisma.db.rounds import rounds
-from prisma.db.visible import visible
-from prisma.db.votes import votes
-from prisma.db.peer import peer
-from prisma.db.state import state
-from prisma.db.head import head
-from prisma.db.consensus import consensus
-from prisma.db.height import height
-from prisma.db.sign import sign
-from prisma.db.transactions import transactions
-from prisma.db.witness import witness
+from prisma.db.events import Events
+from prisma.db.rounds import Rounds
+from prisma.db.visible import Visible
+from prisma.db.votes import Votes
+from prisma.db.peer import Peer
+from prisma.db.state import State
+from prisma.db.head import Head
+from prisma.db.consensus import Consensus
+from prisma.db.height import Height
+from prisma.db.sign import Sign
+from prisma.db.transactions import Transactions
+from prisma.db.witness import Witness
 
 class PrismaDB(object):
     """
@@ -66,18 +67,18 @@ class PrismaDB(object):
         self.create_indexes()
 
 
-        self.events = events(self.db, self)
-        self.rounds = rounds(self.db, self)
-        self.visible = visible(self.db, self)
-        self.votes = votes(self.db, self)
-        self.peer = peer(self.db, self)
-        self.state = state(self.db, self)
-        self.head = head(self.db, self)
-        self.consensus = consensus(self.db, self)
-        self.height = height(self.db, self)
-        self.sign = sign(self.db, self)
-        self.transactions = transactions(self.db, self)
-        self.witness = witness(self.db, self)
+        self.events = Events(self.db, self)
+        self.rounds = Rounds(self.db, self)
+        self.visible = Visible(self.db, self)
+        self.votes = Votes(self.db, self)
+        self.peer = Peer(self.db, self)
+        self.state = State(self.db, self)
+        self.head = Head(self.db, self)
+        self.consensus = Consensus(self.db, self)
+        self.height = Height(self.db, self)
+        self.sign = Sign(self.db, self)
+        self.transactions = Transactions(self.db, self)
+        self.witness = Witness(self.db, self)
 
     def create_indexes(self):
         """
