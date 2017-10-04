@@ -7,7 +7,7 @@ Licensed under the GNU Lesser General Public License, version 3 or later. See LI
 
 import logging
 
-class sign(object):
+class Sign(object):
     def __init__(self, prismaDB, super):
         self.logger = logging.getLogger('PrismaDB-sign')
         self.db = prismaDB

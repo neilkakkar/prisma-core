@@ -7,7 +7,7 @@ Licensed under the GNU Lesser General Public License, version 3 or later. See LI
 
 import logging
 
-class state(object):
+class State(object):
     def __init__(self, prismaDB, super):
         self.logger = logging.getLogger('PrismaDB-state')
         self.db = prismaDB

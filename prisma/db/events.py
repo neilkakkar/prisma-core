@@ -12,7 +12,7 @@ from pymongo.errors import DuplicateKeyError
 
 from prisma.utils.common import Common
 
-class events(object):
+class Events(object):
 
     def __init__(self, prismaDB, super):
         self.logger = logging.getLogger('PrismaDB-Events')

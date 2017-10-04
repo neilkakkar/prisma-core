@@ -7,7 +7,7 @@ Licensed under the GNU Lesser General Public License, version 3 or later. See LI
 
 import logging
 
-class consensus(object):
+class Consensus(object):
     def __init__(self, prismaDB, super):
         self.logger = logging.getLogger('PrismaDB-consensus')
         self.db = prismaDB

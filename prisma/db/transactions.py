@@ -9,7 +9,7 @@ import logging
 
 from prisma.cryptograph.transaction import TYPE_SIGNED_STATE, TYPE_MONEY_TRANSFER
 
-class transactions(object):
+class Transactions(object):
     
     def __init__(self, prismaDB,super):
         self.logger = logging.getLogger('PrismaDB-Witness')

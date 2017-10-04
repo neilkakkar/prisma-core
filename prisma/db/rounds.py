@@ -9,7 +9,7 @@ import logging
 
 from pymongo.errors import DuplicateKeyError
 
-class rounds(object):
+class Rounds(object):
 
     def __init__(self, prismaDB, super):
         self.logger = logging.getLogger('PrismaDB-Rounds')

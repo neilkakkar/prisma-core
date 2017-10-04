@@ -16,7 +16,7 @@ from pymongo.errors import ConnectionFailure
 from prisma.config import CONFIG
 
 
-class peer(object):
+class Peer(object):
     def __init__(self, prismaDB, super):
         self.logger = logging.getLogger('PrismaDB-Peer')
         self.db = prismaDB
